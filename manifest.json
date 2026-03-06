@@ -1,0 +1,15 @@
+{
+  "background_color": "#ffffff",
+  "dir": "ltr",
+  "display": "standalone",
+  "name": "Metromaestro",
+  "orientation": "any",
+  "scope": "/",
+  "short_name": "Metromaestro",
+  "start_url": "/https://jomanez1.github.io/Metromaestro/",
+  "theme_color": "#ffffff",
+  "categories": [
+    "music"
+  ],
+  "description": "Metrónomo y afinador profesional con ritmos de batería de acompañamiento"
+}

@@ -154,6 +154,11 @@ body{background:var(--bg);color:var(--tx);font-family:'Nunito',sans-serif;min-he
 </style>
 </head>
 <body>
+<script>
+  if (typeof navigator.serviceWorker !== 'undefined') {
+    navigator.serviceWorker.register('sw.js')
+  }
+</script>
 <div class="ad-top"><span style="font-size:9px;color:var(--mu);letter-spacing:1px;">· PUBLICIDAD ·</span></div>
 <div class="fl2" id="fl"></div>
 <div class="app">
