@@ -11,76 +11,267 @@
 <title>MetroMaestro</title>
 <link rel="manifest" href="manifest.json">
 <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@700;800&display=swap" rel="stylesheet">
-<!-- AdMob: Reemplazar con tus IDs cuando tengas cuenta -->
+
+<!-- ═══════════════════════════════════════════════════════════
+     AdMob Configuration - REPLACE WITH YOUR IDS
+     ═══════════════════════════════════════════════════════════ -->
+<!-- Step 1: Replace ca-pub-XXXXXXXXXX with your AdMob Publisher ID -->
 <!-- <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXX" crossorigin="anonymous"></script> -->
+
 <script>
-// ═══════════════════════════════════════════════════════════
-// INTERSTITIAL AD SYSTEM
-// ═══════════════════════════════════════════════════════════
+<!-- AdMob Interstitial Configuration -->
+// Replace these with your actual Ad Unit IDs from AdMob dashboard
 const ADMOB_CONFIG = {
   enabled: false, // Set to true when you have real AdMob IDs
-  interstitialId: 'ca-app-pub-XXXXXXXXXX/AAAAAAAAAA'
+  publisherId: 'ca-pub-XXXXXXXXXX', // Your Publisher ID
+  bannerTopId: 'ca-app-pub-XXXXXXXXXX/YYYYYYYYYY', // Top banner ad unit ID
+  bannerBottomId: 'ca-app-pub-XXXXXXXXXX/ZZZZZZZZZZ', // Bottom banner ad unit ID
+  interstitialId: 'ca-app-pub-XXXXXXXXXX/AAAAAAAAAA' // Interstitial ad unit ID
 };
 
+// ═══════════════════════════════════════════════════════════
+// IN-APP PURCHASE CONFIGURATION
+// ═══════════════════════════════════════════════════════════
+const IAP_CONFIG = {
+  enabled: true, // Enable in-app purchase system
+  price: '1.95€',
+  productId: 'metromaestro_pro_noads', // Unique product ID for Google Play
+  // For testing with Google Play Billing Library:
+  // Use 'android.test.purchased' as productId for testing
+};
+
+// Check if user has already purchased (stored in localStorage)
+let isPro = false;
+function checkProStatus() {
+  try {
+    isPro = localStorage.getItem('metromaestro_pro') === 'true';
+    if (isPro) {
+      hideAllAds();
+      showProBadge();
+    }
+  } catch(e) {
+    console.log('LocalStorage not available');
+  }
+}
+
+function hideAllAds() {
+  const adTop = document.getElementById('adTop');
+  const adBottom = document.getElementById('adBottom');
+  if (adTop) adTop.style.display = 'none';
+  if (adBottom) adBottom.style.display = 'none';
+}
+
+function showProBadge() {
+  const badge = document.createElement('div');
+  badge.className = 'pro-badge';
+  badge.innerHTML = '⭐ PRO';
+  document.body.appendChild(badge);
+}
+
+// Show purchase modal
+function showPurchaseModal() {
+  const modal = document.createElement('div');
+  modal.id = 'purchaseModal';
+  modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.95);z-index:10000;display:flex;align-items:center;justify-content:center;animation:fadeIn 0.3s;';
+  
+  modal.innerHTML = `
+    <div style="background:linear-gradient(135deg,#1a1a20,#0a0a0e);border-radius:24px;padding:32px 24px;max-width:360px;width:90%;border:2px solid rgba(255,215,0,0.3);box-shadow:0 0 40px rgba(255,215,0,0.2);animation:slideUp 0.4s;">
+      <div style="text-align:center;margin-bottom:24px;">
+        <div style="font-size:48px;margin-bottom:12px;">⭐</div>
+        <div style="font-family:'Fredoka One',cursive;font-size:28px;background:linear-gradient(135deg,#ffd700,#ffed4e);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:8px;">MetroMaestro PRO</div>
+        <div style="color:#888;font-size:13px;line-height:1.6;">Disfruta de la app sin interrupciones</div>
+      </div>
+      
+      <div style="background:rgba(255,215,0,0.1);border:1px solid rgba(255,215,0,0.3);border-radius:16px;padding:20px;margin-bottom:24px;">
+        <div style="font-size:13px;font-weight:700;color:#ffd700;margin-bottom:12px;">✓ Incluye:</div>
+        <div style="display:flex;flex-direction:column;gap:10px;">
+          <div style="display:flex;align-items:center;gap:10px;font-size:13px;color:#ccc;">
+            <span style="color:#ffd700;">🚫</span>
+            <span>Sin anuncios de banner</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:10px;font-size:13px;color:#ccc;">
+            <span style="color:#ffd700;">🚫</span>
+            <span>Sin anuncios intersticiales</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:10px;font-size:13px;color:#ccc;">
+            <span style="color:#ffd700;">⚡</span>
+            <span>Experiencia fluida y rápida</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:10px;font-size:13px;color:#ccc;">
+            <span style="color:#ffd700;">♾️</span>
+            <span>Acceso de por vida</span>
+          </div>
+        </div>
+      </div>
+      
+      <div style="text-align:center;margin-bottom:20px;">
+        <div style="font-size:14px;color:#888;margin-bottom:6px;">Pago único</div>
+        <div style="font-family:'Fredoka One',cursive;font-size:48px;background:linear-gradient(135deg,#fff,#ffd700);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">1.95€</div>
+      </div>
+      
+      <button onclick="processPurchase()" style="width:100%;padding:16px;background:linear-gradient(135deg,#ffd700,#ffed4e);border:none;border-radius:12px;color:#000;font-family:'Nunito',sans-serif;font-size:16px;font-weight:800;cursor:pointer;margin-bottom:12px;box-shadow:0 4px 20px rgba(255,215,0,0.4);transition:all 0.2s;">
+        🛒 COMPRAR AHORA
+      </button>
+      
+      <button onclick="closePurchaseModal()" style="width:100%;padding:12px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:12px;color:#888;font-family:'Nunito',sans-serif;font-size:13px;font-weight:700;cursor:pointer;">
+        Tal vez más tarde
+      </button>
+      
+      <div style="text-align:center;margin-top:16px;font-size:11px;color:#666;">
+        Pago seguro procesado por Google Play
+      </div>
+    </div>
+  `;
+  
+  document.body.appendChild(modal);
+}
+
+function closePurchaseModal() {
+  const modal = document.getElementById('purchaseModal');
+  if (modal) {
+    modal.style.animation = 'fadeOut 0.3s';
+    setTimeout(() => modal.remove(), 300);
+  }
+}
+
+// Process purchase (integrate with Google Play Billing)
+async function processPurchase() {
+  // Show loading state
+  const modal = document.getElementById('purchaseModal');
+  const btn = modal.querySelector('button');
+  btn.textContent = '⏳ Procesando...';
+  btn.disabled = true;
+  
+  try {
+    // In production, this will call Google Play Billing Library
+    // For now, we simulate the purchase
+    
+    // Simulate API call delay
+    await new Promise(resolve => setTimeout(resolve, 1500));
+    
+    // Mark as purchased
+    try {
+      localStorage.setItem('metromaestro_pro', 'true');
+    } catch(e) {
+      console.log('Cannot save to localStorage');
+    }
+    
+    isPro = true;
+    hideAllAds();
+    closePurchaseModal();
+    
+    // Show success message
+    showSuccessMessage();
+    
+  } catch (error) {
+    btn.textContent = '❌ Error - Reintentar';
+    btn.disabled = false;
+    console.error('Purchase error:', error);
+  }
+}
+
+function showSuccessMessage() {
+  const msg = document.createElement('div');
+  msg.style.cssText = 'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:linear-gradient(135deg,#39e87a,#2ecc71);color:#fff;padding:24px 32px;border-radius:16px;font-family:"Nunito",sans-serif;font-size:16px;font-weight:800;z-index:10001;box-shadow:0 8px 32px rgba(57,232,122,0.4);animation:bounceIn 0.5s;text-align:center;';
+  msg.innerHTML = `
+    <div style="font-size:48px;margin-bottom:12px;">🎉</div>
+    <div>¡Bienvenido a PRO!</div>
+    <div style="font-size:13px;font-weight:600;margin-top:8px;opacity:0.9;">Disfruta sin anuncios</div>
+  `;
+  document.body.appendChild(msg);
+  
+  setTimeout(() => {
+    msg.style.animation = 'fadeOut 0.3s';
+    setTimeout(() => {
+      msg.remove();
+      showProBadge();
+      location.reload(); // Reload to apply changes
+    }, 300);
+  }, 2500);
+}
+
+// Show "Remove Ads" button in settings
+function showRemoveAdsButton() {
+  if (isPro) return; // Don't show if already pro
+  
+  const btn = document.createElement('div');
+  btn.style.cssText = 'position:fixed;bottom:80px;right:16px;background:linear-gradient(135deg,#ffd700,#ffed4e);padding:12px 20px;border-radius:20px;box-shadow:0 4px 20px rgba(255,215,0,0.5);cursor:pointer;z-index:999;animation:pulse 2s ease-in-out infinite;';
+  btn.innerHTML = `
+    <div style="display:flex;align-items:center;gap:8px;color:#000;font-family:'Nunito',sans-serif;font-weight:800;font-size:13px;">
+      <span style="font-size:18px;">⭐</span>
+      <span>Quitar anuncios</span>
+      <span style="font-size:11px;background:rgba(0,0,0,0.2);padding:2px 6px;border-radius:8px;">1.95€</span>
+    </div>
+  `;
+  btn.onclick = showPurchaseModal;
+  document.body.appendChild(btn);
+}
+
+// Interstitial Ad Manager
+let interstitialAdReady = false;
 let interstitialActionCount = 0;
-const ACTIONS_BEFORE_INTERSTITIAL = 5; // Show ad every 5 actions
+const ACTIONS_BEFORE_INTERSTITIAL = 5; // Show interstitial every 5 actions
+
+function initInterstitialAd() {
+  if (!ADMOB_CONFIG.enabled || isPro) return;
+  console.log('Interstitial ad initialized');
+  interstitialAdReady = true;
+}
 
 function showInterstitialAd() {
-  if (!ADMOB_CONFIG.enabled) {
-    // Show placeholder for testing
+  if (!ADMOB_CONFIG.enabled || isPro) return;
+  
+  interstitialActionCount++;
+  
+  if (interstitialActionCount >= ACTIONS_BEFORE_INTERSTITIAL && interstitialAdReady) {
+    console.log('Showing interstitial ad');
     showInterstitialPlaceholder();
-    return;
+    interstitialActionCount = 0;
+    interstitialAdReady = false;
+    setTimeout(() => initInterstitialAd(), 1000);
   }
-  // In production with AdMob SDK: adMob.showInterstitial()
-  showInterstitialPlaceholder();
 }
 
 function showInterstitialPlaceholder() {
-  interstitialActionCount++;
-  
-  if (interstitialActionCount < ACTIONS_BEFORE_INTERSTITIAL) return;
-  
-  interstitialActionCount = 0;
-  
   const overlay = document.createElement('div');
-  overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.95);z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;animation:fadeIn 0.3s;';
+  overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.95);z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;';
   overlay.innerHTML = `
-    <div style="background:#1a1a20;border-radius:20px;padding:30px;max-width:340px;width:90%;text-align:center;">
-      <div style="font-size:12px;color:#888;margin-bottom:16px;letter-spacing:1px;">ANUNCIO</div>
-      <div style="width:300px;height:250px;background:#2a2a30;border-radius:12px;display:flex;align-items:center;justify-content:center;margin-bottom:20px;">
-        <div style="color:#666;font-size:13px;">Anuncio 300x250</div>
+    <div style="background:#1a1a20;border-radius:20px;padding:30px;max-width:320px;text-align:center;">
+      <div style="font-size:14px;color:#888;margin-bottom:20px;">ANUNCIO</div>
+      <div style="width:300px;height:250px;background:#2a2a30;border-radius:10px;display:flex;align-items:center;justify-content:center;margin-bottom:20px;">
+        <div style="color:#666;">Anuncio 300x250</div>
       </div>
-      <button id="closeAdBtn" style="background:#ff2d9b;color:#fff;border:none;padding:14px 32px;border-radius:12px;font-weight:800;font-size:14px;cursor:pointer;width:100%;transition:all 0.2s;" disabled>
-        Cerrar (5)
-      </button>
+      <button onclick="this.parentElement.parentElement.remove()" style="background:#ff2d9b;color:#fff;border:none;padding:12px 30px;border-radius:10px;font-weight:800;font-size:14px;cursor:pointer;margin-bottom:12px;width:100%;">Cerrar (5)</button>
+      <button onclick="this.parentElement.parentElement.remove();showPurchaseModal();" style="background:linear-gradient(135deg,#ffd700,#ffed4e);color:#000;border:none;padding:10px 24px;border-radius:10px;font-weight:800;font-size:12px;cursor:pointer;width:100%;">⭐ Quitar anuncios - 1.95€</button>
     </div>
   `;
   document.body.appendChild(overlay);
   
   let countdown = 5;
-  const btn = overlay.querySelector('#closeAdBtn');
+  const btn = overlay.querySelector('button');
   const interval = setInterval(() => {
     countdown--;
-    btn.textContent = countdown > 0 ? `Cerrar (${countdown})` : 'Cerrar';
+    btn.textContent = `Cerrar (${countdown})`;
     if (countdown <= 0) {
       clearInterval(interval);
-      btn.disabled = false;
-      btn.style.background = 'linear-gradient(135deg,#39e87a,#2ecc71)';
-      btn.onclick = () => {
-        overlay.style.animation = 'fadeOut 0.3s';
-        setTimeout(() => overlay.remove(), 300);
-      };
+      btn.textContent = 'Cerrar';
     }
   }, 1000);
 }
 
-// Add fade animations
+// Add CSS animations
 const style = document.createElement('style');
 style.textContent = `
 @keyframes fadeIn{from{opacity:0}to{opacity:1}}
 @keyframes fadeOut{from{opacity:1}to{opacity:0}}
+@keyframes slideUp{from{transform:translateY(30px);opacity:0}to{transform:translateY(0);opacity:1}}
+@keyframes bounceIn{0%{transform:translate(-50%,-50%) scale(0.3);opacity:0}50%{transform:translate(-50%,-50%) scale(1.05)}100%{transform:translate(-50%,-50%) scale(1);opacity:1}}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.05)}}
+.pro-badge{position:fixed;top:10px;right:10px;background:linear-gradient(135deg,#ffd700,#ffed4e);color:#000;font-size:9px;font-weight:800;padding:4px 10px;border-radius:12px;z-index:1000;letter-spacing:1px;box-shadow:0 0 20px rgba(255,215,0,0.5);animation:pulse-gold 2s ease-in-out infinite;}
+@keyframes pulse-gold{0%,100%{box-shadow:0 0 20px rgba(255,215,0,0.5)}50%{box-shadow:0 0 30px rgba(255,215,0,0.8)}}
 `;
 document.head.appendChild(style);
+
 </script>
 <style>
 :root{--bg:#0a0a0e;--s:#111118;--s2:#18181f;--s3:#22222e;--pk:#ff2d9b;--gr:#39e87a;--bl:#29b6f6;--yl:#ffd740;--or:#ff7043;--tx:#f5f0ff;--mu:#5a5a72;--pu:#c77dff;}
@@ -90,12 +281,12 @@ body{background:var(--bg);color:var(--tx);font-family:'Nunito',sans-serif;min-he
 .ad-bottom{position:fixed;bottom:0;left:0;right:0;min-height:60px;background:var(--s);border-top:1px solid rgba(255,255,255,0.07);display:flex;align-items:center;justify-content:center;z-index:100;}
 .app{max-width:460px;margin:0 auto;padding:10px 12px 20px;display:flex;flex-direction:column;gap:10px;}
 .hdr{display:flex;align-items:center;justify-content:space-between;}
-.logo{font-family:'Fredoka One',cursive;font-size:24px;background:linear-gradient(135deg,var(--pk),var(--yl),var(--gr));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.logo{font-family:'Fredoka One',cursive;font-size:20px;background:linear-gradient(135deg,var(--pk),var(--yl),var(--gr));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
 .langs{display:flex;gap:2px;background:var(--s);border-radius:16px;padding:3px;}
-.lb{background:none;border:none;color:var(--mu);font-size:11px;font-weight:800;padding:4px 7px;border-radius:11px;cursor:pointer;transition:all 0.2s;}
+.lb{background:none;border:none;color:var(--mu);font-size:9px;font-weight:800;padding:3px 5px;border-radius:11px;cursor:pointer;transition:all 0.2s;}
 .lb.on{background:linear-gradient(135deg,var(--pk),#e91e8c);color:#fff;}
 .tabs{display:flex;gap:0;background:var(--s);border-radius:13px;padding:3px;}
-.tb{flex:1;padding:10px 4px;background:none;border:none;color:var(--mu);font-size:13px;font-weight:800;border-radius:10px;cursor:pointer;transition:all 0.2s;}
+.tb{flex:1;padding:8px 4px;background:none;border:none;color:var(--mu);font-size:11px;font-weight:800;border-radius:10px;cursor:pointer;transition:all 0.2s;}
 .tb.on{background:linear-gradient(135deg,var(--pk),#e91e8c);color:#fff;}
 .tc{display:none;flex-direction:column;gap:10px;}
 .tc.on{display:flex;}
@@ -109,23 +300,23 @@ body{background:var(--bg);color:var(--tx);font-family:'Nunito',sans-serif;min-he
 .bd.ac.on{background:var(--pk);border-color:var(--pk);box-shadow:0 0 14px var(--pk);}
 .psv{width:70px;height:85px;}
 .bpmd{text-align:center;}
-.bpmn{font-family:'Fredoka One',cursive;font-size:72px;line-height:1;background:linear-gradient(135deg,#fff 30%,var(--pk));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
-.bpml{font-size:12px;color:var(--mu);letter-spacing:2px;text-transform:uppercase;}
-.tname{font-size:13px;font-weight:800;background:linear-gradient(90deg,var(--gr),var(--bl));-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-top:2px;}
+.bpmn{font-family:'Fredoka One',cursive;font-size:64px;line-height:1;background:linear-gradient(135deg,#fff 30%,var(--pk));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.bpml{font-size:10px;color:var(--mu);letter-spacing:2px;text-transform:uppercase;}
+.tname{font-size:11px;font-weight:800;background:linear-gradient(90deg,var(--gr),var(--bl));-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-top:2px;}
 .ss{width:100%;}
 .bs{width:100%;-webkit-appearance:none;height:6px;border-radius:3px;outline:none;cursor:pointer;background:linear-gradient(90deg,var(--pk) var(--p,35%),var(--s3) var(--p,35%));}
 .bs::-webkit-slider-thumb{-webkit-appearance:none;width:22px;height:22px;border-radius:50%;background:linear-gradient(135deg,var(--pk),var(--yl));box-shadow:0 0 8px rgba(255,45,155,0.5);cursor:pointer;border:2px solid var(--bg);}
-.bpr{display:flex;justify-content:space-between;margin-top:4px;font-size:11px;color:var(--mu);}
+.bpr{display:flex;justify-content:space-between;margin-top:4px;font-size:9px;color:var(--mu);}
 .ctr{display:flex;gap:6px;align-items:center;justify-content:center;width:100%;}
-.btap{flex:1;padding:10px 3px;background:var(--s2);border:1px solid rgba(255,255,255,0.06);color:var(--tx);font-size:12px;font-weight:800;border-radius:10px;cursor:pointer;transition:all 0.15s;}
+.btap{flex:1;padding:9px 3px;background:var(--s2);border:1px solid rgba(255,255,255,0.06);color:var(--tx);font-size:10px;font-weight:800;border-radius:10px;cursor:pointer;transition:all 0.15s;}
 .btap:active{background:rgba(255,45,155,0.15);transform:scale(0.96);}
 .bplay{width:58px;height:58px;border-radius:50%;border:none;cursor:pointer;background:linear-gradient(135deg,var(--pk),#e91e8c);box-shadow:0 0 18px rgba(255,45,155,0.5);display:flex;align-items:center;justify-content:center;transition:all 0.2s;}
-.btap:active{transform:scale(0.94);}
+.bplay:active{transform:scale(0.94);}
 .bplay.on{background:linear-gradient(135deg,var(--gr),var(--bl));box-shadow:0 0 18px rgba(57,232,122,0.5);}
 .bplay svg{width:22px;height:22px;fill:#fff;}
 .badj{width:40px;height:40px;border-radius:50%;background:var(--s2);border:1px solid rgba(255,255,255,0.06);color:var(--tx);font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.15s;}
 .badj:active{transform:scale(0.94);background:rgba(255,45,155,0.12);}
-.sec-title{font-size:12px;letter-spacing:2px;text-transform:uppercase;color:var(--mu);font-weight:800;padding:4px 2px;}
+.sec-title{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--mu);font-weight:800;padding:4px 2px;}
 .drum-card{background:var(--s);border-radius:20px;border:1px solid rgba(255,215,64,0.2);padding:16px;display:flex;flex-direction:column;gap:10px;position:relative;overflow:hidden;}
 .drum-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--yl),var(--or),var(--pk),var(--yl));background-size:200%;animation:gm 3s linear infinite;}
 .drum-title{font-size:14px;color:var(--yl);font-weight:800;letter-spacing:2px;text-align:center;text-transform:uppercase;}
@@ -141,17 +332,17 @@ body{background:var(--bg);color:var(--tx);font-family:'Nunito',sans-serif;min-he
 .ph{display:flex;align-items:center;justify-content:space-between;padding:11px 13px;cursor:pointer;user-select:none;}
 .ptw{display:flex;align-items:center;gap:6px;}
 .pi{font-size:14px;}
-.pt{font-size:12px;letter-spacing:2px;text-transform:uppercase;color:var(--mu);font-weight:800;}
-.pa{color:var(--mu);font-size:11px;transition:transform 0.2s;}
+.pt{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--mu);font-weight:800;}
+.pa{color:var(--mu);font-size:9px;transition:transform 0.2s;}
 .pa.op{transform:rotate(180deg);color:var(--pk);}
 .pb{padding:0 11px 11px;display:none;}
 .pb.op{display:block;}
 .tsg{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;}
-.tsb{background:var(--s2);border:1px solid rgba(255,255,255,0.06);color:var(--mu);font-size:14px;font-weight:800;padding:9px 3px;border-radius:9px;cursor:pointer;text-align:center;transition:all 0.2s;}
+.tsb{background:var(--s2);border:1px solid rgba(255,255,255,0.06);color:var(--mu);font-size:12px;font-weight:800;padding:7px 3px;border-radius:9px;cursor:pointer;text-align:center;transition:all 0.2s;}
 .tsb.on{background:rgba(255,45,155,0.15);border-color:var(--pk);color:var(--pk);}
 .sg{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:9px;}
-.sb{background:var(--s2);border:1px solid rgba(255,255,255,0.06);color:var(--mu);font-size:11px;font-weight:700;padding:9px 3px;border-radius:9px;cursor:pointer;text-align:center;display:flex;flex-direction:column;align-items:center;gap:3px;}
-.sb .ic{font-size:20px;}
+.sb{background:var(--s2);border:1px solid rgba(255,255,255,0.06);color:var(--mu);font-size:9px;font-weight:700;padding:7px 3px;border-radius:9px;cursor:pointer;text-align:center;display:flex;flex-direction:column;align-items:center;gap:3px;}
+.sb .ic{font-size:17px;}
 .sb.on{background:rgba(41,182,246,0.15);border-color:var(--bl);color:var(--bl);}
 .cr{display:flex;align-items:center;gap:7px;margin-bottom:7px;}
 .cic{font-size:14px;min-width:18px;text-align:center;}
@@ -164,10 +355,10 @@ body{background:var(--bg);color:var(--tx);font-family:'Nunito',sans-serif;min-he
 .rs.sw::-webkit-slider-thumb{-webkit-appearance:none;width:15px;height:15px;border-radius:50%;background:var(--yl);border:2px solid var(--bg);}
 .pattern-panel{background:linear-gradient(135deg,rgba(255,215,64,0.06),rgba(255,112,67,0.06));border:2px solid rgba(255,215,64,0.35)!important;box-shadow:0 0 22px rgba(255,215,64,0.2);}
 .pattern-header{background:rgba(255,215,64,0.1);}
-.pattern-title{color:var(--yl)!important;font-size:13px!important;letter-spacing:2.5px;}
+.pattern-title{color:var(--yl)!important;font-size:11px!important;letter-spacing:2.5px;}
 .dg{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;}
-.db{background:linear-gradient(135deg,var(--s2),rgba(255,215,64,0.06));border:2px solid rgba(255,215,64,0.2);color:var(--tx);font-size:14px;font-weight:800;padding:14px 7px;border-radius:13px;cursor:pointer;text-align:center;display:flex;flex-direction:column;align-items:center;gap:5px;transition:all 0.3s;box-shadow:0 2px 10px rgba(0,0,0,0.3);}
-.db .ic{font-size:32px;filter:drop-shadow(0 2px 5px rgba(255,215,64,0.3));transition:all 0.3s;}
+.db{background:linear-gradient(135deg,var(--s2),rgba(255,215,64,0.06));border:2px solid rgba(255,215,64,0.2);color:var(--tx);font-size:12px;font-weight:800;padding:13px 7px;border-radius:13px;cursor:pointer;text-align:center;display:flex;flex-direction:column;align-items:center;gap:5px;transition:all 0.3s;box-shadow:0 2px 10px rgba(0,0,0,0.3);}
+.db .ic{font-size:28px;filter:drop-shadow(0 2px 5px rgba(255,215,64,0.3));transition:all 0.3s;}
 .db:active{transform:scale(0.96);}
 .db.on{background:linear-gradient(135deg,rgba(255,215,64,0.28),rgba(255,112,67,0.22));border-color:var(--yl);color:var(--yl);box-shadow:0 0 18px rgba(255,215,64,0.5),0 4px 14px rgba(0,0,0,0.4);transform:translateY(-2px) scale(1.02);animation:pulse-glow 2s ease-in-out infinite;}
 .db.on .ic{transform:scale(1.12);filter:drop-shadow(0 0 10px var(--yl));}
@@ -183,12 +374,12 @@ body{background:var(--bg);color:var(--tx);font-family:'Nunito',sans-serif;min-he
 .dlb{font-size:9px;font-weight:700;margin-bottom:3px;}
 .tc2{background:var(--s);border-radius:20px;border:1px solid rgba(41,182,246,0.2);padding:15px;display:flex;flex-direction:column;align-items:center;gap:12px;position:relative;overflow:hidden;}
 .tc2::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--bl),var(--gr),var(--bl));background-size:200%;animation:gm 2s linear infinite;}
-.tn{font-family:'Fredoka One',cursive;font-size:80px;line-height:1;color:var(--tx);transition:color 0.2s;text-align:center;}
+.tn{font-family:'Fredoka One',cursive;font-size:68px;line-height:1;color:var(--tx);transition:color 0.2s;text-align:center;}
 .tn.it{color:var(--gr);text-shadow:0 0 24px rgba(57,232,122,0.5);}
 .tn.sh{color:var(--or);}
 .tn.fl{color:var(--bl);}
-.tf{font-size:14px;color:var(--mu);font-weight:600;text-align:center;}
-.tce{font-size:15px;font-weight:800;text-align:center;}
+.tf{font-size:11px;color:var(--mu);font-weight:600;text-align:center;}
+.tce{font-size:12px;font-weight:800;text-align:center;}
 .tce.it{color:var(--gr);}
 .tce.sh{color:var(--or);}
 .tce.fl{color:var(--bl);}
@@ -224,12 +415,20 @@ body{background:var(--bg);color:var(--tx);font-family:'Nunito',sans-serif;min-he
 </style>
 </head>
 <body>
-<script>
-  if (typeof navigator.serviceWorker !== 'undefined') {
-    navigator.serviceWorker.register('sw.js')
-  }
-</script>
-<div class="ad-top"><span style="font-size:9px;color:var(--mu);letter-spacing:1px;">· PUBLICIDAD ·</span></div>
+<!-- ═══ TOP BANNER AD ═══ -->
+<div class="ad-top" id="adTop">
+  <!-- PRODUCTION: Uncomment this when you have real AdMob IDs -->
+  <!--
+  <ins class="adsbygoogle"
+       style="display:inline-block;width:320px;height:50px"
+       data-ad-client="ca-pub-XXXXXXXXXX"
+       data-ad-slot="YYYYYYYYYY"></ins>
+  <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+  -->
+  
+  <!-- TESTING: Remove this in production -->
+  <div style="width:320px;height:50px;background:#2a2a30;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:10px;color:#666;">Banner Superior 320x50</div>
+</div>
 <div class="fl2" id="fl"></div>
 <div class="app">
 <div class="hdr">
@@ -411,7 +610,20 @@ body{background:var(--bg);color:var(--tx);font-family:'Nunito',sans-serif;min-he
 </div>
 </div>
 
-<div class="ad-bottom"><span style="font-size:9px;color:var(--mu);letter-spacing:1px;">· PUBLICIDAD ·</span></div>
+<!-- ═══ BOTTOM BANNER AD (FIXED) ═══ -->
+<div class="ad-bottom" id="adBottom">
+  <!-- PRODUCTION: Uncomment this when you have real AdMob IDs -->
+  <!--
+  <ins class="adsbygoogle"
+       style="display:inline-block;width:320px;height:50px"
+       data-ad-client="ca-pub-XXXXXXXXXX"
+       data-ad-slot="ZZZZZZZZZZ"></ins>
+  <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+  -->
+  
+  <!-- TESTING: Remove this in production -->
+  <div style="width:320px;height:50px;background:#2a2a30;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:10px;color:#666;">Banner Inferior 320x50</div>
+</div>
 
 <script>
 const TR={
@@ -616,8 +828,7 @@ function stopDrum(){clearTimeout(drumRafId);drumRafId=null;}
 function togPlay(){
   gCtx();play=!play;const pb=g('pb'),pi=g('pic');
   if(play){
-    pb.classList.add('on');
-    pi.innerHTML='<rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/>';
+    pb.classList.add('on');pi.innerHTML='<rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/>';
     startMetro();
     showInterstitialAd(); // Trigger interstitial
   }
@@ -628,8 +839,7 @@ function togDrum(){
   if(drum==='none'){alert(TR[L].dr.none||'Selecciona un ritmo primero');return;}
   dplay=!dplay;const pb=g('dpb'),pi=g('dpic');
   if(dplay){
-    pb.classList.add('on');
-    pi.innerHTML='<rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/>';
+    pb.classList.add('on');pi.innerHTML='<rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/>';
     g('dswrap').style.display='block';rDSeq();startDrum();
     showInterstitialAd(); // Trigger interstitial
   }
@@ -665,13 +875,12 @@ function rDrum(){
   const e=g('dgr');e.innerHTML='';
   DM.forEach(d=>{const b=document.createElement('button');b.className='db'+(d.id==='none'?' nb':'')+(d.id===drum?' on':'');b.innerHTML=`<span class="ic">${d.ic}</span><span>${TR[L].dr[d.id]}</span>`;
     b.onclick=()=>{
-      const wasNone = drum === 'none';
       drum=d.id;rDrum();
-      if(d.id==='none'){if(dplay){dplay=false;stopDrum();g('dpb').classList.remove('on');g('dpic').innerHTML='<path d="M8 5v14l11-7z"/>';}g('dswrap').style.display='none';}
-      else{
-        if(dplay){g('dswrap').style.display='block';rDSeq();}
-        if(!wasNone) showInterstitialAd(); // Trigger when changing between patterns (not from none)
+      if(d.id!=='none'){
+        showInterstitialAd(); // Trigger interstitial when selecting pattern
       }
+      if(d.id==='none'){if(dplay){dplay=false;stopDrum();g('dpb').classList.remove('on');g('dpic').innerHTML='<path d="M8 5v14l11-7z"/>';}g('dswrap').style.display='none';}
+      else{if(dplay){g('dswrap').style.display='block';rDSeq();}}
     };e.appendChild(b);});
 }
 function rDSeq(){
@@ -694,144 +903,161 @@ function showTab(t){
   if(t==='t'){rTTabs();rRefGrid();}
 }
 
-// Tuner smoothing buffer for stability
-let tunerHistory = [];
-const TUNER_HISTORY_SIZE = 8; // Average last 8 readings
-const TUNER_STABILITY_THRESHOLD = 3; // Only update if change > 3 cents
-let lastStableCents = 0;
-let lastStableNote = null;
-
-function f2n(freq){
-  if(freq<20||freq>6000)return null;
-  const sem=12*Math.log2(freq/440);
-  const mid=Math.round(sem)+69;
-  const cents=Math.round((sem+69-mid)*100);
-  return{note:NM[((mid%12)+12)%12],oct:Math.floor(mid/12)-1,freq,cents};
-}
-
+function f2n(freq){if(freq<20||freq>6000)return null;const sem=12*Math.log2(freq/440),mid=Math.round(sem)+69,cents=Math.round((sem+69-mid)*100);return{note:NM[((mid%12)+12)%12],oct:Math.floor(mid/12)-1,freq,cents};}
 function autoCorr(buf,sr){
   const SZ=buf.length,MX=Math.floor(SZ/2);
-  let best=-1,bc=-1,lc=1,found=false,rms=0;
+  let best=-1,bc=-1,rms=0;
   
-  // Higher RMS threshold to ignore background noise
+  // Calculate RMS for volume threshold - REDUCED for more sensitivity
   for(let i=0;i<SZ;i++)rms+=buf[i]*buf[i];
-  if(Math.sqrt(rms/SZ)<0.02)return -1; // Increased from 0.01
+  if(Math.sqrt(rms/SZ)<0.005)return -1; // More sensitive (was 0.01)
   
-  for(let off=0;off<MX;off++){
-    let cr=0;
-    for(let i=0;i<MX;i++)cr+=Math.abs(buf[i]-buf[i+off]);
-    cr=1-(cr/MX);
-    
-    // Higher correlation threshold for more stable detection
-    if(cr>0.95&&cr>lc){ // Increased from 0.9
-      found=true;
-      if(cr>bc){bc=cr;best=off;}
-    }else if(found)break;
-    lc=cr;
+  // Autocorrelation with better peak detection
+  const corr=new Array(MX);
+  for(let lag=0;lag<MX;lag++){
+    let sum=0;
+    for(let i=0;i<MX;i++){
+      sum+=buf[i]*buf[i+lag];
+    }
+    corr[lag]=sum;
   }
+  
+  // Normalize
+  const maxCorr=Math.max(...corr);
+  for(let i=0;i<MX;i++)corr[i]/=maxCorr;
+  
+  // Find first significant peak (LOWERED threshold for more sensitivity)
+  for(let i=20;i<MX;i++){ // Skip very low frequencies
+    if(corr[i]>0.85 && // More sensitive (was 0.9)
+       corr[i]>corr[i-1] && 
+       corr[i]>corr[i+1]){
+      best=i;
+      bc=corr[i];
+      break;
+    }
+  }
+  
+  // Parabolic interpolation for sub-sample accuracy
+  if(best>0&&best<MX-1){
+    const a=corr[best-1],b=corr[best],c=corr[best+1];
+    const offset=0.5*(a-c)/(a-2*b+c);
+    best=best+offset;
+  }
+  
   return best===-1?-1:sr/best;
 }
 
-function smoothTunerData(newData){
-  if(!newData)return null;
-  
-  // Add to history
-  tunerHistory.push(newData);
-  if(tunerHistory.length>TUNER_HISTORY_SIZE){
-    tunerHistory.shift();
-  }
-  
-  // Need minimum samples for stability
-  if(tunerHistory.length<4)return newData;
-  
-  // Calculate average frequency and cents
-  let avgFreq=0,avgCents=0;
-  const recentData=tunerHistory.slice(-TUNER_HISTORY_SIZE);
-  
-  // Filter out outliers (remove values too far from median)
-  const freqs=recentData.map(d=>d.freq).sort((a,b)=>a-b);
-  const median=freqs[Math.floor(freqs.length/2)];
-  const validData=recentData.filter(d=>Math.abs(d.freq-median)<10); // Within 10Hz
-  
-  if(validData.length===0)return newData;
-  
-  validData.forEach(d=>{
-    avgFreq+=d.freq;
-    avgCents+=d.cents;
-  });
-  avgFreq/=validData.length;
-  avgCents=Math.round(avgCents/validData.length);
-  
-  // Only update if change is significant (reduces jitter)
-  if(Math.abs(avgCents-lastStableCents)<TUNER_STABILITY_THRESHOLD){
-    avgCents=lastStableCents; // Keep previous value if too small change
-  }else{
-    lastStableCents=avgCents;
-  }
-  
-  return{
-    note:newData.note,
-    oct:newData.oct,
-    freq:avgFreq,
-    cents:avgCents
-  };
-}
+let lastValidNote=null;
+let noteStabilityCount=0;
+const STABILITY_THRESHOLD=3; // Require 3 consistent readings
 
 function updTuner(res){
   const nt=g('tnote'),nf=g('tfreq'),nc=g('tcents'),nd=g('mnd');
   
   if(!res){
-    nt.textContent='—';nt.className='tn';
-    nf.textContent='— Hz';
-    nc.textContent='…';nc.className='tce';
+    // Keep last note visible briefly for stability
+    if(noteStabilityCount>0){
+      noteStabilityCount--;
+      return;
+    }
+    nt.textContent='—';nt.className='tn';nf.textContent='— Hz';nc.textContent='…';nc.className='tce';
     nd.style.left='50%';nd.className='mnd';
-    tunerHistory=[]; // Reset history
-    lastStableCents=0;
-    lastStableNote=null;
+    lastValidNote=null;
     return;
   }
   
-  // Apply smoothing
-  const smoothed=smoothTunerData(res);
-  if(!smoothed)return;
-  
-  const{note,oct:o,freq,cents}=smoothed;
-  
-  // Only update note if it's different (prevents flickering)
+  const{note,oct:o,freq,cents}=res;
   const currentNote=note+o;
-  if(currentNote!==lastStableNote){
-    nt.textContent=currentNote;
-    lastStableNote=currentNote;
+  
+  // Stability check - only update if note is consistent
+  if(lastValidNote!==currentNote){
+    if(noteStabilityCount<STABILITY_THRESHOLD){
+      noteStabilityCount++;
+      return; // Don't update yet
+    }
   }
   
+  lastValidNote=currentNote;
+  noteStabilityCount=STABILITY_THRESHOLD;
+  
+  nt.textContent=currentNote;
   nf.textContent=freq.toFixed(1)+' Hz';
   
-  // Wider "in tune" threshold for more stable green state
-  const it=Math.abs(cents)<=8; // Increased from 5
-  const sh=cents>8;
+  const it=Math.abs(cents)<=10; // More forgiving (was 5)
+  const sh=cents>10;
   const cl=it?'it':sh?'sh':'fl';
-  
   nt.className='tn '+cl;
   nc.textContent=it?'✓ Afinado':(cents>0?'+':'')+cents+'¢';
   nc.className='tce '+cl;
-  
-  // Smoother needle movement with easing
-  const targetLeft=Math.max(8,Math.min(92,50+(cents/50)*40));
-  nd.style.left=targetLeft+'%';
+  nd.style.left=Math.max(8,Math.min(92,50+(cents/50)*40))+'%';
   nd.className='mnd'+(it?' it':'');
-  
   hlStr(freq);
 }
-function hlStr(freq){const t=TUN[tunKey];if(!t)return;let bi=-1,bc=999;t.s.forEach((s,i)=>{const d=Math.abs(1200*Math.log2(freq/s.f));if(d<bc){bc=d;bi=i;}});aStr=(bc<60)?bi:-1;rTDisp();}
-function tunLoop(){if(!tunAn)return;const buf=new Float32Array(tunAn.fftSize);tunAn.getFloatTimeDomainData(buf);const fr=autoCorr(buf,AC.sampleRate);updTuner(fr>0?f2n(fr):null);tunRaf=requestAnimationFrame(tunLoop);}
-async function togTuner(){const tb=g('tbtn'),ts=g('tst');if(!tunOn){try{gCtx();tunStr=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:false,noiseSuppression:false,autoGainControl:false}});const src=AC.createMediaStreamSource(tunStr);tunAn=AC.createAnalyser();tunAn.fftSize=4096;src.connect(tunAn);tunOn=true;tb.textContent='⏹️';tb.classList.add('on');ts.textContent=TR[L].tls;ts.className='tst on';tunLoop();}catch(e){ts.textContent='⚠️ Permiso de micrófono';}}else{cancelAnimationFrame(tunRaf);if(tunStr)tunStr.getTracks().forEach(t=>t.stop());tunAn=null;tunStr=null;tunOn=false;tb.textContent='🎙️';tb.classList.remove('on');ts.textContent=TR[L].tst;ts.className='tst';updTuner(null);aStr=-1;rTDisp();}}
+
+let tunerUpdateThrottle=0;
+function tunLoop(){
+  if(!tunAn)return;
+  
+  // Throttle updates for smoother display
+  const now=Date.now();
+  if(now-tunerUpdateThrottle<50){ // Update every 50ms max
+    tunRaf=requestAnimationFrame(tunLoop);
+    return;
+  }
+  tunerUpdateThrottle=now;
+  
+  const buf=new Float32Array(tunAn.fftSize);
+  tunAn.getFloatTimeDomainData(buf);
+  const fr=autoCorr(buf,AC.sampleRate);
+  updTuner(fr>0?f2n(fr):null);
+  tunRaf=requestAnimationFrame(tunLoop);
+}
+async function togTuner(){
+  const tb=g('tbtn'),ts=g('tst');
+  if(!tunOn){
+    try{
+      gCtx();
+      tunStr=await navigator.mediaDevices.getUserMedia({
+        audio:{
+          echoCancellation:false,
+          noiseSuppression:false,
+          autoGainControl:false,
+          sampleRate:48000
+        }
+      });
+      const src=AC.createMediaStreamSource(tunStr);tunAn=AC.createAnalyser();
+      tunAn.fftSize=8192; // Increased for better resolution
+      tunAn.smoothingTimeConstant=0.8;
+      src.connect(tunAn);tunOn=true;
+      tb.textContent='⏹️';tb.classList.add('on');ts.textContent=TR[L].tls;ts.className='tst on';tunLoop();
+      showInterstitialAd();
+    }catch(e){ts.textContent='⚠️ Permiso de micrófono';}
+  }else{
+    cancelAnimationFrame(tunRaf);if(tunStr)tunStr.getTracks().forEach(t=>t.stop());
+    tunAn=null;tunStr=null;tunOn=false;tb.textContent='🎙️';tb.classList.remove('on');
+    ts.textContent=TR[L].tst;ts.className='tst';updTuner(null);aStr=-1;rTDisp();
+    lastValidNote=null;noteStabilityCount=0;
+  }
+}
 function rTTabs(){const c=g('ttabs');c.innerHTML='';const ico={guitar_std:'🎸',guitar_drop_d:'🎸',guitar_open_g:'🎸',guitar_dadgad:'🎸',bass_std:'🎸',bass_5:'🎸',violin:'🎻',ukulele:'🪕',ukulele_low:'🪕',mandolin:'🪕',banjo:'🪕'};TO.forEach(id=>{const b=document.createElement('button');b.className='ttb'+(id===tunKey?' on':'');b.textContent=ico[id]+' '+(TR[L].tn[id]||id);b.onclick=()=>{tunKey=id;aStr=-1;rTTabs();};c.appendChild(b);});rTDisp();}
 function rTDisp(){const t=TUN[tunKey];if(!t)return;const d=g('tdsp');let h=`<div class="ttl">${TR[L].tn[tunKey]||tunKey}</div><div class="strs">`;t.s.forEach((s,i)=>{h+=`<div class="str" onclick="pFreq(${s.f})"><div class="sn${i===aStr?' hl':''}">${s.n}</div><div class="snum">${i+1}ª</div><div class="sfq">${s.f.toFixed(0)}Hz</div></div>`;});h+='</div>';d.innerHTML=h;}
 function pFreq(freq){const c=gCtx(),now=c.currentTime,g2=c.createGain();g2.connect(MG);[1,2,3,4].forEach((h,i)=>{const o=c.createOscillator(),g3=c.createGain();o.type='sine';o.frequency.value=freq*h;g3.gain.setValueAtTime(0,now);g3.gain.linearRampToValueAtTime(0.13/(i+1),now+0.02);g3.gain.exponentialRampToValueAtTime(0.001,now+2);o.connect(g3);g3.connect(g2);o.start(now);o.stop(now+2.1);});}
 function rRefGrid(){const e=g('rngr');e.innerHTML='';NM.forEach(n=>{const b=document.createElement('button');b.className='rnb';b.textContent=n;b.onclick=()=>{const mi=NM.indexOf(n)+(oct+1)*12;pFreq(440*Math.pow(2,(mi-69)/12));document.querySelectorAll('.rnb').forEach(x=>x.classList.remove('on'));b.classList.add('on');setTimeout(()=>b.classList.remove('on'),2100);};e.appendChild(b);});}
 function sOct(v){oct=parseInt(v);g('ocv').textContent=v;g('ocsl').style.setProperty('--p',((v-2)/4*100)+'%');}
 
-window.addEventListener('DOMContentLoaded',()=>{rBeats();rTSig();rSnd();rDrum();updTName();updDBpmUI();updSyncBar();updI();});
+window.addEventListener('DOMContentLoaded',()=>{
+  rBeats();rTSig();rSnd();rDrum();updTName();updDBpmUI();updSyncBar();updI();
+  checkProStatus(); // Check if user has purchased PRO
+  initInterstitialAd(); // Initialize interstitial ads
+  if (!isPro && IAP_CONFIG.enabled) {
+    showRemoveAdsButton(); // Show floating "Remove Ads" button
+  }
+});
+</script>
+     <script>
+  if (typeof navigator.serviceWorker !== 'undefined') {
+    navigator.serviceWorker.register('sw.js')
+  }
 </script>
 </body>
 </html>
