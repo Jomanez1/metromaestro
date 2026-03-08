@@ -501,5 +501,12 @@ function pFreq(freq){const c=gCtx(),now=c.currentTime,g2=c.createGain();g2.conne
 
 window.addEventListener('DOMContentLoaded',()=>{rBeats();rTSig();rSnd();rDrum();updTName();updDBpmUI();updSyncBar();updI();checkProStatus();initInterstitialAd();if(!isPro&&IAP_CONFIG.enabled){showRemoveAdsButton();}initTuningSelector();updateStringsDisplay(null);});
 </script>
+  </script>
+  </script>
+     <script>
+  if (typeof navigator.serviceWorker !== 'undefined') {
+    navigator.serviceWorker.register('sw.js')
+  }
+</script>
 </body>
 </html>
