@@ -16,11 +16,11 @@
 // ═══════════════════════════════════════════════════════════════════
 
 // 🔧 PASO 1: Cambia a TRUE cuando tengas tus IDs de AdMob reales
-const USE_PRODUCTION = true; // ← Cambia a: true
+const USE_PRODUCTION = false; // ← Cambia a: true
 
 // 🔧 PASO 2: Pon aquí tus IDs reales de AdMob (cuando los tengas)
 const ADMOB_PRODUCTION = {
-  publisherId: 'ca-app-pub-2753616648390510~2806355919',              // ← TU PUBLISHER ID
+  publisherId: 'ca-pub-2753616648390510',              // ← TU PUBLISHER ID
   bannerTopId: 'ca-app-pub-2753616648390510/3892352660', // ← TU BANNER SUPERIOR
   bannerBottomId: 'ca-app-pub-2753616648390510/3517277719', // ← TU BANNER INFERIOR
   interstitialId: 'ca-app-pub-2753616648390510/5951869367'  // ← TU INTERSTICIAL
@@ -33,7 +33,6 @@ const ADMOB_TEST = {
   bannerBottomId: 'ca-app-pub-3940256099942544/6300978111',
   interstitialId: 'ca-app-pub-3940256099942544/1033173712'
 };
-
 
 // ═══════════════════════════════════════════════════════════════════
 // ⛔ NO TOCAR NADA DE AQUÍ HACIA ABAJO
@@ -224,6 +223,16 @@ body{background:var(--bg);color:var(--tx);font-family:'Nunito',sans-serif;min-he
 .fl2{position:fixed;inset:0;pointer-events:none;z-index:999;opacity:0;transition:opacity 0.04s;}
 .fl2.b{background:rgba(57,232,122,0.05);opacity:1;}
 .fl2.a{background:rgba(255,45,155,0.1);opacity:1;}
+
+/* Splash screen */
+.splash{position:fixed;inset:0;background:var(--bg);z-index:10000;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:28px;}
+.splash-logo{font-family:'Fredoka One',cursive;font-size:48px;background:linear-gradient(135deg,var(--pk),var(--yl),var(--gr));-webkit-background-clip:text;-webkit-text-fill-color:transparent;text-align:center;line-height:1.1;}
+.splash-sub{font-size:13px;color:var(--mu);font-weight:700;letter-spacing:3px;text-transform:uppercase;}
+.splash-note{font-size:72px;animation:bounce 1.4s ease-in-out infinite;}
+@keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
+.splash-btn{padding:16px 48px;background:linear-gradient(135deg,var(--pk),#e91e8c);border:none;color:#fff;font-size:17px;font-weight:800;border-radius:50px;cursor:pointer;box-shadow:0 0 28px rgba(255,45,155,0.5);letter-spacing:1px;transition:transform 0.15s;}
+.splash-btn:active{transform:scale(0.96);}
+.splash.hidden{display:none;}
 </style>
 </head>
 <body>
@@ -234,6 +243,13 @@ body{background:var(--bg);color:var(--tx);font-family:'Nunito',sans-serif;min-he
        data-ad-format="auto"
        data-full-width-responsive="true"></ins>
   <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+</div>
+
+<div class="splash" id="splash">
+  <div class="splash-note">🎵</div>
+  <div class="splash-logo">MetroMaestro</div>
+  <div class="splash-sub">Metrónomo · Batería · Afinador</div>
+  <button class="splash-btn" onclick="startApp()">COMENZAR</button>
 </div>
 
 <div class="fl2" id="fl"></div>
@@ -528,7 +544,7 @@ function pHat(when) {
 
 
 const DP={none:null,rock:{k:[1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0],s:[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0],h:[1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0]},jazz:{k:[1,0,0,1,0,0,1,0,0,0,1,0,0,1,0,0],s:[0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0],h:[1,1,0,1,1,0,1,1,0,1,1,0,1,1,0,1]},bossa:{k:[1,0,0,1,0,0,0,1,0,0,1,0,0,0,0,0],s:[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0],h:[1,0,1,1,0,1,0,1,1,0,1,1,0,1,0,1]},reggae:{k:[1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0],s:[0,0,0,0,0,0,1,0,0,0,0,0,0,0,1,0],h:[1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0]},funk:{k:[1,0,0,1,0,1,0,0,1,0,0,1,0,0,1,0],s:[0,0,1,0,0,0,1,0,0,0,1,0,0,0,0,1],h:[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]},blues:{k:[1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0],s:[0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0],h:[1,0,0,1,0,0,1,0,0,1,0,0,1,0,0,1]},waltz:{k:[1,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0],s:[0,0,0,0,1,0,0,0,0,0,1,0,0,0,0,0],h:[1,0,1,0,1,0,1,0,1,0,1,0,0,0,0,0]},latin:{k:[1,0,0,0,0,1,0,0,1,0,0,0,0,1,0,0],s:[0,0,1,0,1,0,0,0,0,0,1,0,1,0,0,0],h:[1,1,0,1,0,1,1,0,1,1,0,1,0,1,1,0]},metal:{k:[1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0],s:[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0],h:[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]},shuffle:{k:[1,0,0,1,0,0,1,0,0,1,0,0,0,0,0,0],s:[0,0,0,0,0,0,1,0,0,0,0,0,0,0,1,0],h:[1,0,1,1,0,1,1,0,1,1,0,1,1,0,1,1]}};
-const DM=[{id:'none',ic:'🚫'},{id:'rock',ic:'🤘'},{id:'jazz',ic:'🎷'},{id:'bossa',ic:'🌴'},{id:'reggae',ic:'🇯🇲'},{id:'funk',ic:'🕺'},{id:'blues',ic:'🎸'},{id:'waltz',ic:'💃'},{id:'latin',ic:'🪘'},{id:'metal',ic:'💀'},{id:'shuffle',ic:'🃏'}];
+const DM=[{id:'rock',ic:'🤘'},{id:'jazz',ic:'🎷'},{id:'bossa',ic:'🌴'},{id:'reggae',ic:'🇯🇲'},{id:'funk',ic:'🕺'},{id:'blues',ic:'🎸'},{id:'waltz',ic:'💃'},{id:'latin',ic:'🪘'},{id:'metal',ic:'💀'},{id:'shuffle',ic:'🃏'}];
 const NM=['C','C#','D','D#','E','F','F#','G','G#','A','A#','B'];
 const TMPOS=[{n:'Larghissimo',mx:24},{n:'Largo',mx:46},{n:'Larghetto',mx:60},{n:'Adagio',mx:76},{n:'Andante',mx:108},{n:'Moderato',mx:120},{n:'Allegretto',mx:132},{n:'Allegro',mx:168},{n:'Vivace',mx:200},{n:'Presto',mx:240},{n:'Prestissimo',mx:999}];
 const SNDS=[{id:'classic',ic:'🎵'},{id:'wood',ic:'🪵'},{id:'bell',ic:'🔔'},{id:'click',ic:'💥'},{id:'deep',ic:'🥁'},{id:'high',ic:'🎶'}];
@@ -536,7 +552,7 @@ const TSIGS=[2,3,4,5,6,7,8];
 const LOOKAHEAD=0.1,SCHEDINTERVAL=25;
 
 let bpm=120,play=false,beat=0,tsig=4,snd='classic',vol=0.8,swg=0;
-let dbpm=120,dplay=false,drum='none',dstep=0,taps=[],dtaps=[],pdir=1,fTmr=null;
+let dbpm=120,dplay=false,drum='rock',dstep=0,taps=[],dtaps=[],pdir=1,fTmr=null;
 let metroNextTime=0,metroRafId=null,metroBeat=0,metroSwapCount=0;
 let drumNextTime=0,drumRafId=null,drumSched=0;
 
@@ -551,7 +567,7 @@ function stopDrum(){clearTimeout(drumRafId);drumRafId=null;}
 
 function togPlay(){gCtx();play=!play;const pb=g('pb'),pi=g('pic');if(play){pb.classList.add('on');pi.innerHTML='<rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/>';startMetro();showInterstitialAd();}else{pb.classList.remove('on');pi.innerHTML='<path d="M8 5v14l11-7z"/>';stopMetro();beat=0;rBeats();g('parm').style.transform='rotate(0deg)';}}
 
-function togDrum(){gCtx();if(drum==='none'){alert(TR[L].dr.none||'Selecciona un ritmo primero');return;}dplay=!dplay;const pb=g('dpb'),pi=g('dpic');if(dplay){pb.classList.add('on');pi.innerHTML='<rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/>';g('dswrap').style.display='block';rDSeq();startDrum();showInterstitialAd();}else{pb.classList.remove('on');pi.innerHTML='<path d="M8 5v14l11-7z"/>';stopDrum();dstep=0;if(drum!=='none')rDSeq();}}
+function togDrum(){gCtx();dplay=!dplay;const pb=g('dpb'),pi=g('dpic');if(dplay){pb.classList.add('on');pi.innerHTML='<rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/>';g('dswrap').style.display='block';rDSeq();startDrum();showInterstitialAd();}else{pb.classList.remove('on');pi.innerHTML='<path d="M8 5v14l11-7z"/>';stopDrum();dstep=0;rDSeq();}}
 
 function syncBpms(){const wasDPlay=dplay,wasPlay=play;if(wasDPlay)stopDrum();if(wasPlay)stopMetro();dbpm=bpm;updDBpmUI();updSyncBar();if(wasPlay)startMetro();if(wasDPlay)startDrum();}
 function updSyncBar(){g('si-m').textContent=bpm;g('si-d').textContent=dbpm;}
@@ -587,7 +603,7 @@ function flash(acc){const o=g('fl');o.className='fl2 '+(acc?'a':'b');clearTimeou
 
 function rst(){if(play)togPlay();bpm=120;tsig=4;beat=0;swg=0;snd='classic';vol=0.8;g('vsl').value=80;sVol(80);g('swsl').value=0;sSwing(0);sBpm(120);rTSig();rBeats();rSnd();updSyncBar();}
 
-function rstDrum(){if(dplay)togDrum();dbpm=120;drum='none';dstep=0;g('dswrap').style.display='none';updDBpmUI();rDrum();updSyncBar();}
+function rstDrum(){if(dplay)togDrum();dbpm=120;drum='rock';dstep=0;g('dswrap').style.display='none';updDBpmUI();rDrum();updSyncBar();}
 
 function togP(id){const pb2=g('pb-'+id),pa=g('pa-'+id),op=pb2.classList.contains('op');pb2.classList.toggle('op',!op);pa.classList.toggle('op',!op);}
 
@@ -623,7 +639,9 @@ function initTuningSelector(){const container=g('tuningSelector');if(!container)
 
 function pFreq(freq){const c=gCtx(),now=c.currentTime,g2=c.createGain();g2.connect(MG);[1,2,3,4].forEach((h,i)=>{const o=c.createOscillator(),g3=c.createGain();o.type='sine';o.frequency.value=freq*h;g3.gain.setValueAtTime(0,now);g3.gain.linearRampToValueAtTime(0.13/(i+1),now+0.02);g3.gain.exponentialRampToValueAtTime(0.001,now+2);o.connect(g3);g3.connect(g2);o.start(now);o.stop(now+2.1);});}
 
-window.addEventListener('DOMContentLoaded',()=>{rBeats();rTSig();rSnd();rDrum();updTName();updDBpmUI();updSyncBar();updI();initTuningSelector();updateStringsDisplay(null);gCtx();loadDrumSamples();showInterstitialPlaceholder();});
+function startApp(){g('splash').classList.add('hidden');showInterstitialPlaceholder();}
+
+window.addEventListener('DOMContentLoaded',()=>{rBeats();rTSig();rSnd();rDrum();updTName();updDBpmUI();updSyncBar();updI();initTuningSelector();updateStringsDisplay(null);gCtx();loadDrumSamples();});
 </script>
 <script>
   if (typeof navigator.serviceWorker !== 'undefined') {
