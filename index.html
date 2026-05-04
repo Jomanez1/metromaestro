@@ -16,7 +16,7 @@
 // ═══════════════════════════════════════════════════════════════════
 
 // 🔧 PASO 1: Cambia a TRUE cuando tengas tus IDs de AdMob reales
-const USE_PRODUCTION = false; // ← Cambia a: true
+const USE_PRODUCTION = true; // ← Cambia a: true
 
 // 🔧 PASO 2: Pon aquí tus IDs reales de AdMob (cuando los tengas)
 const ADMOB_PRODUCTION = {
@@ -63,10 +63,10 @@ function showInterstitialPlaceholder() {
   const overlay = document.createElement('div');
   overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.95);z-index:9999;display:flex;align-items:center;justify-content:center;';
   overlay.innerHTML = `
-    <div style="background:#1a1a20;border-radius:20px;padding:30px;text-align:center;max-width:340px;">
+    <div style="background:#1a1a20;border-radius:20px;padding:30px;text-align:center;width:340px;max-width:95vw;">
       <div style="font-size:14px;color:#888;margin-bottom:20px;">ANUNCIO</div>
-      <div style="width:300px;height:250px;background:#2a2a30;border-radius:10px;display:flex;align-items:center;justify-content:center;margin-bottom:20px;">
-        <div style="color:#666;">Anuncio Intersticial 300x250</div>
+      <div style="width:100%;height:250px;background:#2a2a30;border-radius:10px;display:flex;align-items:center;justify-content:center;margin-bottom:20px;">
+        <div style="color:#666;">Anuncio Intersticial</div>
       </div>
       <button onclick="this.parentElement.parentElement.remove()" 
               style="width:100%;background:linear-gradient(135deg,#ff2d9b,#e91e8c);color:#fff;border:none;padding:14px;border-radius:10px;font-weight:800;cursor:pointer;font-size:15px;pointer-events:none;opacity:0.5;">
@@ -281,7 +281,6 @@ body{background:var(--bg);color:var(--tx);font-family:'Nunito',sans-serif;min-he
        style="display:block"
        data-ad-format="auto"
        data-full-width-responsive="true"></ins>
-  <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
 </div>
 
 <div class="splash" id="splash">
@@ -515,25 +514,9 @@ body{background:var(--bg);color:var(--tx);font-family:'Nunito',sans-serif;min-he
        style="display:block"
        data-ad-format="auto"
        data-full-width-responsive="true"></ins>
-  <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
 </div>
 
 <script>
-// Inyectar script de AdMob dinámicamente
-(function() {
-  const script = document.createElement('script');
-  script.async = true;
-  script.src = `https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ADMOB.publisherId}`;
-  script.crossOrigin = 'anonymous';
-  document.head.appendChild(script);
-  
-  // Configurar data-ad-client en los banners
-  document.querySelectorAll('.adsbygoogle').forEach((ad, idx) => {
-    ad.setAttribute('data-ad-client', ADMOB.publisherId);
-    ad.setAttribute('data-ad-slot', idx === 0 ? ADMOB.bannerTopId.split('/')[1] : ADMOB.bannerBottomId.split('/')[1]);
-  });
-})();
-
 const TR={es:{m:"🥁 Metrónomo",t:"🎸 Afinador",ts:"Compás",sn:"Sonido de clic",pat:"RITMOS DE BATERÍA",sw:"Swing",rst:"RESET",kk:"Bombo",sk:"Caja",hk:"Hi-hat",sync:"⟳ Sincronizar",synced:"✓ Sincronizados",tp:{Larghissimo:"Larghissimo",Largo:"Largo",Larghetto:"Larghetto",Adagio:"Adagio",Andante:"Andante",Moderato:"Moderato",Allegretto:"Allegretto",Allegro:"Allegro",Vivace:"Vivace",Presto:"Presto",Prestissimo:"Prestissimo"},snd:{classic:"Clásico",wood:"Madera",bell:"Campana",click:"Clic",deep:"Grave",high:"Agudo"},dr:{none:"Sin batería",rock:"Rock",jazz:"Jazz",bossa:"Bossa Nova",reggae:"Reggae",funk:"Funk",blues:"Blues",waltz:"Vals",latin:"Latino",metal:"Metal",shuffle:"Shuffle"}},en:{m:"🥁 Metronome",t:"🎸 Tuner",ts:"Time Sig",sn:"Click Sound",pat:"DRUM RHYTHMS",sw:"Swing",rst:"RESET",kk:"Kick",sk:"Snare",hk:"Hi-hat",sync:"⟳ Sync",synced:"✓ Synced",tp:{Larghissimo:"Larghissimo",Largo:"Largo",Larghetto:"Larghetto",Adagio:"Adagio",Andante:"Andante",Moderato:"Moderato",Allegretto:"Allegretto",Allegro:"Allegro",Vivace:"Vivace",Presto:"Presto",Prestissimo:"Prestissimo"},snd:{classic:"Classic",wood:"Wood",bell:"Bell",click:"Click",deep:"Deep",high:"High"},dr:{none:"No Drums",rock:"Rock",jazz:"Jazz",bossa:"Bossa Nova",reggae:"Reggae",funk:"Funk",blues:"Blues",waltz:"Waltz",latin:"Latin",metal:"Metal",shuffle:"Shuffle"}},fr:{m:"🥁 Métronome",t:"🎸 Accordeur",ts:"Mesure",sn:"Son clic",pat:"RYTHMES BATTERIE",sw:"Swing",rst:"RESET",kk:"Grosse caisse",sk:"Caisse claire",hk:"Hi-hat",sync:"⟳ Sync",synced:"✓ Synchronisés",tp:{Larghissimo:"Larghissimo",Largo:"Largo",Larghetto:"Larghetto",Adagio:"Adagio",Andante:"Andante",Moderato:"Modéré",Allegretto:"Allegretto",Allegro:"Allegro",Vivace:"Vif",Presto:"Presto",Prestissimo:"Très vite"},snd:{classic:"Classique",wood:"Bois",bell:"Cloche",click:"Clic",deep:"Grave",high:"Aigu"},dr:{none:"Sans batterie",rock:"Rock",jazz:"Jazz",bossa:"Bossa Nova",reggae:"Reggae",funk:"Funk",blues:"Blues",waltz:"Valse",latin:"Latin",metal:"Metal",shuffle:"Shuffle"}},de:{m:"🥁 Metronom",t:"🎸 Stimmgerät",ts:"Taktart",sn:"Klick",pat:"SCHLAGZEUGRHYTHMEN",sw:"Swing",rst:"RESET",kk:"Bassdrum",sk:"Snare",hk:"Hi-hat",sync:"⟳ Sync",synced:"✓ Synchronisiert",tp:{Larghissimo:"Larghissimo",Largo:"Largo",Larghetto:"Larghetto",Adagio:"Adagio",Andante:"Andante",Moderato:"Mäßig",Allegretto:"Allegretto",Allegro:"Allegro",Vivace:"Lebhaft",Presto:"Presto",Prestissimo:"Sehr schnell"},snd:{classic:"Klassisch",wood:"Holz",bell:"Glocke",click:"Klick",deep:"Tief",high:"Hoch"},dr:{none:"Kein Schlagzeug",rock:"Rock",jazz:"Jazz",bossa:"Bossa Nova",reggae:"Reggae",funk:"Funk",blues:"Blues",waltz:"Walzer",latin:"Latein",metal:"Metal",shuffle:"Shuffle"}},it:{m:"🥁 Metronomo",t:"🎸 Accordatore",ts:"Metrica",sn:"Suono clic",pat:"RITMI BATTERIA",sw:"Swing",rst:"RESET",kk:"Cassa",sk:"Rullante",hk:"Hi-hat",sync:"⟳ Sync",synced:"✓ Sincronizzati",tp:{Larghissimo:"Larghissimo",Largo:"Largo",Larghetto:"Larghetto",Adagio:"Adagio",Andante:"Andante",Moderato:"Moderato",Allegretto:"Allegretto",Allegro:"Allegro",Vivace:"Vivace",Presto:"Presto",Prestissimo:"Prestissimo"},snd:{classic:"Classico",wood:"Legno",bell:"Campana",click:"Clic",deep:"Grave",high:"Acuto"},dr:{none:"Senza batteria",rock:"Rock",jazz:"Jazz",bossa:"Bossa Nova",reggae:"Reggae",funk:"Funk",blues:"Blues",waltz:"Valzer",latin:"Latino",metal:"Metal",shuffle:"Shuffle"}},pt:{m:"🥁 Metrônomo",t:"🎸 Afinador",ts:"Compasso",sn:"Som clique",pat:"RITMOS DE BATERIA",sw:"Swing",rst:"RESET",kk:"Bumbo",sk:"Caixa",hk:"Hi-hat",sync:"⟳ Sincronizar",synced:"✓ Sincronizados",tp:{Larghissimo:"Larghissimo",Largo:"Largo",Larghetto:"Larghetto",Adagio:"Adagio",Andante:"Andante",Moderato:"Moderato",Allegretto:"Allegretto",Allegro:"Allegro",Vivace:"Vivace",Presto:"Presto",Prestissimo:"Prestíssimo"},snd:{classic:"Clássico",wood:"Madeira",bell:"Sino",click:"Clique",deep:"Grave",high:"Agudo"},dr:{none:"Sem bateria",rock:"Rock",jazz:"Jazz",bossa:"Bossa Nova",reggae:"Reggae",funk:"Funk",blues:"Blues",waltz:"Valsa",latin:"Latino",metal:"Metal",shuffle:"Shuffle"}}};
 let L='es';
 function g(id){return document.getElementById(id);}
@@ -787,6 +770,38 @@ window.addEventListener('DOMContentLoaded',()=>{rBeats();rTSig();rSnd();rDrum();
   if (typeof navigator.serviceWorker !== 'undefined') {
     navigator.serviceWorker.register('sw.js')
   }
+</script>
+
+<script>
+// ═══════════════════════════════════════════════════════════════════
+// 📢 CARGA DE ADMOB
+// ═══════════════════════════════════════════════════════════════════
+(function() {
+  // Carga el script de AdSense/AdMob
+  const script = document.createElement('script');
+  script.async = true;
+  script.src = 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=' + ADMOB.publisherId;
+  script.crossOrigin = 'anonymous';
+  document.head.appendChild(script);
+
+  script.onload = function() {
+    // Configura banner superior
+    const bannerTop = document.querySelector('#adTop .adsbygoogle');
+    if (bannerTop) {
+      bannerTop.setAttribute('data-ad-client', ADMOB.publisherId);
+      bannerTop.setAttribute('data-ad-slot', ADMOB.bannerTopId.split('/')[1]);
+      (adsbygoogle = window.adsbygoogle || []).push({});
+    }
+
+    // Configura banner inferior
+    const bannerBottom = document.querySelector('#adBottom .adsbygoogle');
+    if (bannerBottom) {
+      bannerBottom.setAttribute('data-ad-client', ADMOB.publisherId);
+      bannerBottom.setAttribute('data-ad-slot', ADMOB.bannerBottomId.split('/')[1]);
+      (adsbygoogle = window.adsbygoogle || []).push({});
+    }
+  };
+})();
 </script>
 </body>
 </html>
