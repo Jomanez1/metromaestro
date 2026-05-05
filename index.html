@@ -10,94 +10,10 @@
 <link rel="manifest" href="manifest.json">
 <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@700;800&display=swap" rel="stylesheet">
 
-<script>
-// ═══════════════════════════════════════════════════════════════════
-// ⚙️ CONFIGURACIÓN ADMOB - Solo necesitas editar esta sección
-// ═══════════════════════════════════════════════════════════════════
-
-// 🔧 PASO 1: Cambia a TRUE cuando tengas tus IDs de AdMob reales
-const USE_PRODUCTION = true; // ← Cambia a: true
-
-// 🔧 PASO 2: Pon aquí tus IDs reales de AdMob (cuando los tengas)
-const ADMOB_PRODUCTION = {
-  publisherId: 'ca-pub-2753616648390510',              // ← TU PUBLISHER ID
-  bannerTopId: 'ca-app-pub-2753616648390510/3892352660', // ← TU BANNER SUPERIOR
-  bannerBottomId: 'ca-app-pub-2753616648390510/3517277719', // ← TU BANNER INFERIOR
-  interstitialId: 'ca-app-pub-2753616648390510/5951869367'  // ← TU INTERSTICIAL
-};
-
-// 🧪 IDs de prueba de Google (NO TOCAR - funcionan automáticamente)
-const ADMOB_TEST = {
-  publisherId: 'ca-app-pub-3940256099942544',
-  bannerTopId: 'ca-app-pub-3940256099942544/6300978111',
-  bannerBottomId: 'ca-app-pub-3940256099942544/6300978111',
-  interstitialId: 'ca-app-pub-3940256099942544/1033173712'
-};
-
-// ═══════════════════════════════════════════════════════════════════
-// ⛔ NO TOCAR NADA DE AQUÍ HACIA ABAJO
-// ═══════════════════════════════════════════════════════════════════
-
-// Sistema automático de selección (TEST o PRODUCCIÓN)
-const ADMOB = USE_PRODUCTION ? ADMOB_PRODUCTION : ADMOB_TEST;
-
-// Interstitial Ad Manager
-let interstitialActionCount = 0;
-const ACTIONS_BEFORE_INTERSTITIAL = 4;
-
-function showInterstitialAd() {
-  interstitialActionCount++;
-  if (interstitialActionCount >= ACTIONS_BEFORE_INTERSTITIAL) {
-    showInterstitialPlaceholder();
-    interstitialActionCount = 0;
-  }
-}
-
-let lastInterstitialTime = 0;
-const INTERSTITIAL_COOLDOWN = 30000;
-
-function showInterstitialPlaceholder() {
-  const now = Date.now();
-  if (now - lastInterstitialTime < INTERSTITIAL_COOLDOWN) return;
-  lastInterstitialTime = now;
-  const overlay = document.createElement('div');
-  overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.95);z-index:9999;display:flex;align-items:center;justify-content:center;';
-  overlay.innerHTML = `
-    <div style="background:#1a1a20;border-radius:20px;padding:30px;text-align:center;width:340px;max-width:95vw;">
-      <div style="font-size:14px;color:#888;margin-bottom:20px;">ANUNCIO</div>
-      <div style="width:100%;height:250px;background:#2a2a30;border-radius:10px;display:flex;align-items:center;justify-content:center;margin-bottom:20px;">
-        <div style="color:#666;">Anuncio Intersticial</div>
-      </div>
-      <button onclick="this.parentElement.parentElement.remove()" 
-              style="width:100%;background:linear-gradient(135deg,#ff2d9b,#e91e8c);color:#fff;border:none;padding:14px;border-radius:10px;font-weight:800;cursor:pointer;font-size:15px;pointer-events:none;opacity:0.5;">
-        Cerrar (5)
-      </button>
-    </div>
-  `;
-  document.body.appendChild(overlay);
-  
-  let countdown = 5;
-  const btn = overlay.querySelector('button');
-  const interval = setInterval(() => {
-    countdown--;
-    btn.textContent = `Cerrar (${countdown})`;
-    if (countdown <= 0) {
-      clearInterval(interval);
-      btn.textContent = 'Cerrar';
-      btn.style.pointerEvents = 'auto';
-      btn.style.opacity = '1';
-    }
-  }, 1000);
-}
-</script>
-
 <style>
 :root{--bg:#0a0a0e;--s:#111118;--s2:#18181f;--s3:#22222e;--pk:#ff2d9b;--gr:#39e87a;--bl:#29b6f6;--yl:#ffd740;--or:#ff7043;--tx:#f5f0ff;--mu:#5a5a72;--pu:#c77dff;--gold:#ffd700;}
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
 body{background:var(--bg);color:var(--tx);font-family:'Nunito',sans-serif;min-height:100vh;}
-.ad-banner{width:100%;height:50px;background:#1a1a20;display:flex;align-items:center;justify-content:center;color:#666;font-size:11px;border-bottom:1px solid #2a2a30;}
-.ad-banner.top{position:sticky;top:0;z-index:100;}
-.ad-banner.bottom{position:fixed;bottom:0;left:0;right:0;z-index:100;}
 .app{max-width:460px;margin:0 auto;padding:10px 12px 70px;display:flex;flex-direction:column;gap:10px;}
 .hdr{display:flex;align-items:center;justify-content:space-between;}
 .logo{font-family:'Fredoka One',cursive;font-size:20px;background:linear-gradient(135deg,var(--pk),var(--yl),var(--gr));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
@@ -275,13 +191,6 @@ body{background:var(--bg);color:var(--tx);font-family:'Nunito',sans-serif;min-he
 </style>
 </head>
 <body>
-
-<div class="ad-banner top" id="adTop">
-  <ins class="adsbygoogle"
-       style="display:block"
-       data-ad-format="auto"
-       data-full-width-responsive="true"></ins>
-</div>
 
 <div class="splash" id="splash">
   <div class="splash-note">🎵</div>
@@ -509,13 +418,6 @@ body{background:var(--bg);color:var(--tx);font-family:'Nunito',sans-serif;min-he
 </a>
 
 
-<div class="ad-banner bottom" id="adBottom">
-  <ins class="adsbygoogle"
-       style="display:block"
-       data-ad-format="auto"
-       data-full-width-responsive="true"></ins>
-</div>
-
 <script>
 const TR={es:{m:"🥁 Metrónomo",t:"🎸 Afinador",ts:"Compás",sn:"Sonido de clic",pat:"RITMOS DE BATERÍA",sw:"Swing",rst:"RESET",kk:"Bombo",sk:"Caja",hk:"Hi-hat",sync:"⟳ Sincronizar",synced:"✓ Sincronizados",tp:{Larghissimo:"Larghissimo",Largo:"Largo",Larghetto:"Larghetto",Adagio:"Adagio",Andante:"Andante",Moderato:"Moderato",Allegretto:"Allegretto",Allegro:"Allegro",Vivace:"Vivace",Presto:"Presto",Prestissimo:"Prestissimo"},snd:{classic:"Clásico",wood:"Madera",bell:"Campana",click:"Clic",deep:"Grave",high:"Agudo"},dr:{none:"Sin batería",rock:"Rock",jazz:"Jazz",bossa:"Bossa Nova",reggae:"Reggae",funk:"Funk",blues:"Blues",waltz:"Vals",latin:"Latino",metal:"Metal",shuffle:"Shuffle"}},en:{m:"🥁 Metronome",t:"🎸 Tuner",ts:"Time Sig",sn:"Click Sound",pat:"DRUM RHYTHMS",sw:"Swing",rst:"RESET",kk:"Kick",sk:"Snare",hk:"Hi-hat",sync:"⟳ Sync",synced:"✓ Synced",tp:{Larghissimo:"Larghissimo",Largo:"Largo",Larghetto:"Larghetto",Adagio:"Adagio",Andante:"Andante",Moderato:"Moderato",Allegretto:"Allegretto",Allegro:"Allegro",Vivace:"Vivace",Presto:"Presto",Prestissimo:"Prestissimo"},snd:{classic:"Classic",wood:"Wood",bell:"Bell",click:"Click",deep:"Deep",high:"High"},dr:{none:"No Drums",rock:"Rock",jazz:"Jazz",bossa:"Bossa Nova",reggae:"Reggae",funk:"Funk",blues:"Blues",waltz:"Waltz",latin:"Latin",metal:"Metal",shuffle:"Shuffle"}},fr:{m:"🥁 Métronome",t:"🎸 Accordeur",ts:"Mesure",sn:"Son clic",pat:"RYTHMES BATTERIE",sw:"Swing",rst:"RESET",kk:"Grosse caisse",sk:"Caisse claire",hk:"Hi-hat",sync:"⟳ Sync",synced:"✓ Synchronisés",tp:{Larghissimo:"Larghissimo",Largo:"Largo",Larghetto:"Larghetto",Adagio:"Adagio",Andante:"Andante",Moderato:"Modéré",Allegretto:"Allegretto",Allegro:"Allegro",Vivace:"Vif",Presto:"Presto",Prestissimo:"Très vite"},snd:{classic:"Classique",wood:"Bois",bell:"Cloche",click:"Clic",deep:"Grave",high:"Aigu"},dr:{none:"Sans batterie",rock:"Rock",jazz:"Jazz",bossa:"Bossa Nova",reggae:"Reggae",funk:"Funk",blues:"Blues",waltz:"Valse",latin:"Latin",metal:"Metal",shuffle:"Shuffle"}},de:{m:"🥁 Metronom",t:"🎸 Stimmgerät",ts:"Taktart",sn:"Klick",pat:"SCHLAGZEUGRHYTHMEN",sw:"Swing",rst:"RESET",kk:"Bassdrum",sk:"Snare",hk:"Hi-hat",sync:"⟳ Sync",synced:"✓ Synchronisiert",tp:{Larghissimo:"Larghissimo",Largo:"Largo",Larghetto:"Larghetto",Adagio:"Adagio",Andante:"Andante",Moderato:"Mäßig",Allegretto:"Allegretto",Allegro:"Allegro",Vivace:"Lebhaft",Presto:"Presto",Prestissimo:"Sehr schnell"},snd:{classic:"Klassisch",wood:"Holz",bell:"Glocke",click:"Klick",deep:"Tief",high:"Hoch"},dr:{none:"Kein Schlagzeug",rock:"Rock",jazz:"Jazz",bossa:"Bossa Nova",reggae:"Reggae",funk:"Funk",blues:"Blues",waltz:"Walzer",latin:"Latein",metal:"Metal",shuffle:"Shuffle"}},it:{m:"🥁 Metronomo",t:"🎸 Accordatore",ts:"Metrica",sn:"Suono clic",pat:"RITMI BATTERIA",sw:"Swing",rst:"RESET",kk:"Cassa",sk:"Rullante",hk:"Hi-hat",sync:"⟳ Sync",synced:"✓ Sincronizzati",tp:{Larghissimo:"Larghissimo",Largo:"Largo",Larghetto:"Larghetto",Adagio:"Adagio",Andante:"Andante",Moderato:"Moderato",Allegretto:"Allegretto",Allegro:"Allegro",Vivace:"Vivace",Presto:"Presto",Prestissimo:"Prestissimo"},snd:{classic:"Classico",wood:"Legno",bell:"Campana",click:"Clic",deep:"Grave",high:"Acuto"},dr:{none:"Senza batteria",rock:"Rock",jazz:"Jazz",bossa:"Bossa Nova",reggae:"Reggae",funk:"Funk",blues:"Blues",waltz:"Valzer",latin:"Latino",metal:"Metal",shuffle:"Shuffle"}},pt:{m:"🥁 Metrônomo",t:"🎸 Afinador",ts:"Compasso",sn:"Som clique",pat:"RITMOS DE BATERIA",sw:"Swing",rst:"RESET",kk:"Bumbo",sk:"Caixa",hk:"Hi-hat",sync:"⟳ Sincronizar",synced:"✓ Sincronizados",tp:{Larghissimo:"Larghissimo",Largo:"Largo",Larghetto:"Larghetto",Adagio:"Adagio",Andante:"Andante",Moderato:"Moderato",Allegretto:"Allegretto",Allegro:"Allegro",Vivace:"Vivace",Presto:"Presto",Prestissimo:"Prestíssimo"},snd:{classic:"Clássico",wood:"Madeira",bell:"Sino",click:"Clique",deep:"Grave",high:"Agudo"},dr:{none:"Sem bateria",rock:"Rock",jazz:"Jazz",bossa:"Bossa Nova",reggae:"Reggae",funk:"Funk",blues:"Blues",waltz:"Valsa",latin:"Latino",metal:"Metal",shuffle:"Shuffle"}}};
 let L='es';
@@ -599,9 +501,9 @@ function stopMetro(){clearTimeout(metroRafId);metroRafId=null;}
 function startDrum(){const c=gCtx();drumSched=0;dstep=0;drumNextTime=c.currentTime+0.05;drumScheduler();}
 function stopDrum(){clearTimeout(drumRafId);drumRafId=null;}
 
-function togPlay(){gCtx();play=!play;const pb=g('pb'),pi=g('pic');if(play){pb.classList.add('on');pi.innerHTML='<rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/>';startMetro();showInterstitialAd();}else{pb.classList.remove('on');pi.innerHTML='<path d="M8 5v14l11-7z"/>';stopMetro();beat=0;rBeats();g('parm').style.transform='rotate(0deg)';}}
+function togPlay(){gCtx();play=!play;const pb=g('pb'),pi=g('pic');if(play){pb.classList.add('on');pi.innerHTML='<rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/>';startMetro();}else{pb.classList.remove('on');pi.innerHTML='<path d="M8 5v14l11-7z"/>';stopMetro();beat=0;rBeats();g('parm').style.transform='rotate(0deg)';}}
 
-function togDrum(){gCtx();dplay=!dplay;const pb=g('dpb'),pi=g('dpic');if(dplay){pb.classList.add('on');pi.innerHTML='<rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/>';g('dswrap').style.display='block';rDSeq();startDrum();showInterstitialAd();}else{pb.classList.remove('on');pi.innerHTML='<path d="M8 5v14l11-7z"/>';stopDrum();dstep=0;rDSeq();}}
+function togDrum(){gCtx();dplay=!dplay;const pb=g('dpb'),pi=g('dpic');if(dplay){pb.classList.add('on');pi.innerHTML='<rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/>';g('dswrap').style.display='block';rDSeq();startDrum();}else{pb.classList.remove('on');pi.innerHTML='<path d="M8 5v14l11-7z"/>';stopDrum();dstep=0;rDSeq();}}
 
 function syncBpms(){const wasDPlay=dplay,wasPlay=play;if(wasDPlay)stopDrum();if(wasPlay)stopMetro();dbpm=bpm;updDBpmUI();updSyncBar();if(wasPlay)startMetro();if(wasDPlay)startDrum();}
 function updSyncBar(){g('si-m').textContent=bpm;g('si-d').textContent=dbpm;}
@@ -625,7 +527,7 @@ function rTSig(){const e=g('tsg');e.innerHTML='';TSIGS.forEach(ts=>{const b=docu
 
 function rSnd(){const e=g('sgr');e.innerHTML='';SNDS.forEach(s=>{const b=document.createElement('button');b.className='sb'+(s.id===snd?' on':'');b.innerHTML=`<span class="ic">${s.ic}</span><span>${TR[L].snd[s.id]}</span>`;b.onclick=()=>{snd=s.id;rSnd();};e.appendChild(b);});}
 
-function rDrum(){const e=g('dgr');e.innerHTML='';DM.forEach(d=>{const b=document.createElement('button');b.className='db'+(d.id==='none'?' nb':'')+(d.id===drum?' on':'');b.innerHTML=`<span class="ic">${d.ic}</span><span>${TR[L].dr[d.id]}</span>`;b.onclick=()=>{drum=d.id;rDrum();if(d.id==='none'){if(dplay){dplay=false;stopDrum();g('dpb').classList.remove('on');g('dpic').innerHTML='<path d="M8 5v14l11-7z"/>';}g('dswrap').style.display='none';}else{if(dplay){g('dswrap').style.display='block';rDSeq();}}showInterstitialAd();};e.appendChild(b);});}
+function rDrum(){const e=g('dgr');e.innerHTML='';DM.forEach(d=>{const b=document.createElement('button');b.className='db'+(d.id==='none'?' nb':'')+(d.id===drum?' on':'');b.innerHTML=`<span class="ic">${d.ic}</span><span>${TR[L].dr[d.id]}</span>`;b.onclick=()=>{drum=d.id;rDrum();if(d.id==='none'){if(dplay){dplay=false;stopDrum();g('dpb').classList.remove('on');g('dpic').innerHTML='<path d="M8 5v14l11-7z"/>';}g('dswrap').style.display='none';}else{if(dplay){g('dswrap').style.display='block';rDSeq();}}};e.appendChild(b);});}
 
 function rDSeq(){if(!DP[drum])return;const p=DP[drum];[['k','kseq',p.k],['s','sseq',p.s],['h','hseq',p.h]].forEach(([cls,id,arr])=>{const el=g(id);el.innerHTML='';arr.forEach((v,i)=>{const s=document.createElement('div');s.className='ds '+cls+(v?' on':'')+(i===dstep?' cur':'');el.appendChild(s);});});}
 
@@ -641,7 +543,7 @@ function rstDrum(){if(dplay)togDrum();dbpm=120;drum='rock';dstep=0;g('dswrap').s
 
 function togP(id){const pb2=g('pb-'+id),pa=g('pa-'+id),op=pb2.classList.contains('op');pb2.classList.toggle('op',!op);pa.classList.toggle('op',!op);}
 
-function showTab(t){if(play){stopMetro();play=false;g('pb').classList.remove('on');g('pic').innerHTML='<path d="M8 5v14l11-7z"/>';beat=0;rBeats();}if(dplay){stopDrum();dplay=false;g('dpb').classList.remove('on');g('dpic').innerHTML='<path d="M8 5v14l11-7z"/>';dstep=0;if(drum!=='none')rDSeq();}['m','t'].forEach(x=>{g('tc-'+x).classList.toggle('on',x===t);g('tab-'+x).classList.toggle('on',x===t);});showInterstitialPlaceholder();}
+function showTab(t){if(play){stopMetro();play=false;g('pb').classList.remove('on');g('pic').innerHTML='<path d="M8 5v14l11-7z"/>';beat=0;rBeats();}if(dplay){stopDrum();dplay=false;g('dpb').classList.remove('on');g('dpic').innerHTML='<path d="M8 5v14l11-7z"/>';dstep=0;if(drum!=='none')rDSeq();}['m','t'].forEach(x=>{g('tc-'+x).classList.toggle('on',x===t);g('tab-'+x).classList.toggle('on',x===t);});}
 
 const TUNINGS_CONFIG={guitar_std:{name:'Guitarra Estándar',strings:[{n:'E',f:82.41},{n:'A',f:110},{n:'D',f:146.83},{n:'G',f:196},{n:'B',f:246.94},{n:'E',f:329.63}]},guitar_drop_d:{name:'Drop D',strings:[{n:'D',f:73.42},{n:'A',f:110},{n:'D',f:146.83},{n:'G',f:196},{n:'B',f:246.94},{n:'E',f:329.63}]},bass_std:{name:'Bajo 4c',strings:[{n:'E',f:41.2},{n:'A',f:55},{n:'D',f:73.42},{n:'G',f:98}]},ukulele:{name:'Ukulele',strings:[{n:'G',f:392},{n:'C',f:261.63},{n:'E',f:329.63},{n:'A',f:440}]},violin:{name:'Violín',strings:[{n:'G',f:196},{n:'D',f:293.66},{n:'A',f:440},{n:'E',f:659.25}]}};
 
@@ -667,13 +569,13 @@ function updateMicLevel(volume){const bar=g('micLevel');if(bar){const level=Math
 let tunerUpdateThrottle=0;
 function tunLoop(){if(!tunAn)return;const now=Date.now();if(now-tunerUpdateThrottle<50){tunRaf=requestAnimationFrame(tunLoop);return;}tunerUpdateThrottle=now;const buf=new Float32Array(tunAn.fftSize);tunAn.getFloatTimeDomainData(buf);let rms=0;for(let i=0;i<buf.length;i++)rms+=buf[i]*buf[i];const volume=Math.sqrt(rms/buf.length);updateMicLevel(volume);const fr=autoCorr(buf,AC.sampleRate);updTuner(fr>0?f2n(fr):null);tunRaf=requestAnimationFrame(tunLoop);}
 
-async function togTuner(){const tb=g('tbtnBig'),tbl=g('tbtnBigLabel'),ts=g('tst');if(!tunOn){try{gCtx();tunStr=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:false,noiseSuppression:false,autoGainControl:false,sampleRate:48000}});const src=AC.createMediaStreamSource(tunStr);tunAn=AC.createAnalyser();tunAn.fftSize=8192;tunAn.smoothingTimeConstant=0.8;src.connect(tunAn);tunOn=true;if(tb){tb.classList.add('on');tb.childNodes[0].textContent='⏹️';if(tbl)tbl.textContent='Detener micrófono';}if(ts){ts.textContent='🎤 Escuchando...';ts.className='tuner-status listening';}tunLoop();showInterstitialAd();}catch(e){if(ts){ts.textContent='❌ Permiso denegado';ts.className='tuner-status';}}}else{cancelAnimationFrame(tunRaf);if(tunStr)tunStr.getTracks().forEach(t=>t.stop());tunAn=null;tunStr=null;tunOn=false;if(tb){tb.classList.remove('on');tb.childNodes[0].textContent='🎙️';if(tbl)tbl.textContent='Presiona para comenzar';}if(ts){ts.textContent='Micrófono: Apagado';ts.className='tuner-status';}const mb=g('micLevel');if(mb)mb.style.width='0%';updTuner(null);silenceCounter=SILENCE_RESET+1;updTuner(null);}}
+async function togTuner(){const tb=g('tbtnBig'),tbl=g('tbtnBigLabel'),ts=g('tst');if(!tunOn){try{gCtx();tunStr=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:false,noiseSuppression:false,autoGainControl:false,sampleRate:48000}});const src=AC.createMediaStreamSource(tunStr);tunAn=AC.createAnalyser();tunAn.fftSize=8192;tunAn.smoothingTimeConstant=0.8;src.connect(tunAn);tunOn=true;if(tb){tb.classList.add('on');tb.childNodes[0].textContent='⏹️';if(tbl)tbl.textContent='Detener micrófono';}if(ts){ts.textContent='🎤 Escuchando...';ts.className='tuner-status listening';}tunLoop();}catch(e){if(ts){ts.textContent='❌ Permiso denegado';ts.className='tuner-status';}}}else{cancelAnimationFrame(tunRaf);if(tunStr)tunStr.getTracks().forEach(t=>t.stop());tunAn=null;tunStr=null;tunOn=false;if(tb){tb.classList.remove('on');tb.childNodes[0].textContent='🎙️';if(tbl)tbl.textContent='Presiona para comenzar';}if(ts){ts.textContent='Micrófono: Apagado';ts.className='tuner-status';}const mb=g('micLevel');if(mb)mb.style.width='0%';updTuner(null);silenceCounter=SILENCE_RESET+1;updTuner(null);}}
 
 function initTuningSelector(){const container=g('tuningSelector');if(!container)return;container.innerHTML='';Object.keys(TUNINGS_CONFIG).forEach(key=>{const btn=document.createElement('button');btn.className='tuning-btn'+(key===currentTuningKey?' active':'');btn.textContent=TUNINGS_CONFIG[key].name;btn.onclick=()=>{currentTuningKey=key;document.querySelectorAll('.tuning-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');const label=g('stringsLabel');if(label)label.textContent=TUNINGS_CONFIG[key].name;updateStringsDisplay(lastValidNote);};container.appendChild(btn);});}
 
 function pFreq(freq){const c=gCtx(),now=c.currentTime,g2=c.createGain();g2.connect(MG);[1,2,3,4].forEach((h,i)=>{const o=c.createOscillator(),g3=c.createGain();o.type='sine';o.frequency.value=freq*h;g3.gain.setValueAtTime(0,now);g3.gain.linearRampToValueAtTime(0.13/(i+1),now+0.02);g3.gain.exponentialRampToValueAtTime(0.001,now+2);o.connect(g3);g3.connect(g2);o.start(now);o.stop(now+2.1);});}
 
-function startApp(){g('splash').classList.add('hidden');showInterstitialPlaceholder();if(!localStorage.getItem('mm_tour_done')){setTimeout(startWalkthrough,600);}}
+function startApp(){g('splash').classList.add('hidden');if(!localStorage.getItem('mm_tour_done')){setTimeout(startWalkthrough,600);}}
 
 // ═══════════════════════════════════════════════
 // 🎓 WALKTHROUGH
@@ -772,36 +674,5 @@ window.addEventListener('DOMContentLoaded',()=>{rBeats();rTSig();rSnd();rDrum();
   }
 </script>
 
-<script>
-// ═══════════════════════════════════════════════════════════════════
-// 📢 CARGA DE ADMOB
-// ═══════════════════════════════════════════════════════════════════
-(function() {
-  // Carga el script de AdSense/AdMob
-  const script = document.createElement('script');
-  script.async = true;
-  script.src = 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=' + ADMOB.publisherId;
-  script.crossOrigin = 'anonymous';
-  document.head.appendChild(script);
-
-  script.onload = function() {
-    // Configura banner superior
-    const bannerTop = document.querySelector('#adTop .adsbygoogle');
-    if (bannerTop) {
-      bannerTop.setAttribute('data-ad-client', ADMOB.publisherId);
-      bannerTop.setAttribute('data-ad-slot', ADMOB.bannerTopId.split('/')[1]);
-      (adsbygoogle = window.adsbygoogle || []).push({});
-    }
-
-    // Configura banner inferior
-    const bannerBottom = document.querySelector('#adBottom .adsbygoogle');
-    if (bannerBottom) {
-      bannerBottom.setAttribute('data-ad-client', ADMOB.publisherId);
-      bannerBottom.setAttribute('data-ad-slot', ADMOB.bannerBottomId.split('/')[1]);
-      (adsbygoogle = window.adsbygoogle || []).push({});
-    }
-  };
-})();
-</script>
 </body>
 </html>
