@@ -156,8 +156,8 @@ body{background:var(--bg);color:var(--tx);font-family:'Nunito',sans-serif;min-he
 
 /* Walkthrough overlay */
 .wt-overlay{position:fixed;inset:0;z-index:9000;pointer-events:none;}
-.wt-backdrop{position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:9001;pointer-events:all;}
-.wt-highlight{position:fixed;z-index:9002;border-radius:10px;box-shadow:0 0 0 4px var(--pk),0 0 0 8px rgba(255,45,155,0.3);pointer-events:none;transition:all 0.35s cubic-bezier(0.4,0,0.2,1);}
+.wt-backdrop{position:fixed;inset:0;background:rgba(0,0,0,0.55);z-index:9001;pointer-events:all;}
+.wt-highlight{position:fixed;z-index:9003;border-radius:10px;box-shadow:0 0 0 4px var(--pk),0 0 0 8px rgba(255,45,155,0.3);pointer-events:none;transition:all 0.35s cubic-bezier(0.4,0,0.2,1);}
 .wt-hole{position:fixed;z-index:9002;border-radius:10px;pointer-events:none;}
 .wt-tooltip{position:fixed;z-index:9003;background:#1a1a2e;border:1px solid var(--pk);border-radius:14px;padding:16px 18px;max-width:280px;min-width:220px;box-shadow:0 8px 32px rgba(0,0,0,0.6);pointer-events:all;transition:all 0.35s cubic-bezier(0.4,0,0.2,1);}
 .wt-arrow{position:absolute;width:0;height:0;}
@@ -172,7 +172,7 @@ body{background:var(--bg);color:var(--tx);font-family:'Nunito',sans-serif;min-he
 .wt-dots{display:flex;gap:5px;}
 .wt-dot{width:7px;height:7px;border-radius:50%;background:var(--s3);transition:background 0.2s;}
 .wt-dot.on{background:var(--pk);}
-.wt-skip{background:none;border:none;color:var(--mu);font-size:12px;cursor:pointer;padding:0;}
+.wt-skip{background:var(--yl);border:none;color:#1a1a2e;font-size:12px;font-weight:800;cursor:pointer;padding:6px 14px;border-radius:20px;}
 .wt-next{background:linear-gradient(135deg,var(--pk),#e91e8c);border:none;color:#fff;padding:8px 18px;border-radius:20px;font-size:13px;font-weight:800;cursor:pointer;}
 
 /* Rate button */
@@ -265,7 +265,7 @@ body{background:var(--bg);color:var(--tx);font-family:'Nunito',sans-serif;min-he
 </div>
 
 <div class="pn">
-  <div class="ph" onclick="togP('ts')">
+  <div class="ph" onclick="togP('ts')" id="ph-ts">
     <div class="ptw"><span class="pi">🎼</span><span class="pt" id="i-ts">Compás</span></div>
     <span class="pa" id="pa-ts">▼</span>
   </div>
@@ -273,7 +273,7 @@ body{background:var(--bg);color:var(--tx);font-family:'Nunito',sans-serif;min-he
 </div>
 
 <div class="pn">
-  <div class="ph" onclick="togP('sn')">
+  <div class="ph" onclick="togP('sn')" id="ph-sn">
     <div class="ptw"><span class="pi">🔊</span><span class="pt" id="i-sn">Sonido de clic</span></div>
     <span class="pa op" id="pa-sn">▼</span>
   </div>
@@ -413,7 +413,7 @@ body{background:var(--bg);color:var(--tx);font-family:'Nunito',sans-serif;min-he
 
 </div>
 
-<a class="rate-btn" href="https://play.google.com/store/apps/details?id=jomanez1.github.io.twa" target="_blank">
+<a class="rate-btn" href="https://play.google.com/store/apps/details?id=com.tuempresa.metromaestro" target="_blank">
   ⭐ ¿Te gusta MetroMaestro? ¡Valóranos en Play Store!
 </a>
 
@@ -569,7 +569,7 @@ function updateMicLevel(volume){const bar=g('micLevel');if(bar){const level=Math
 let tunerUpdateThrottle=0;
 function tunLoop(){if(!tunAn)return;const now=Date.now();if(now-tunerUpdateThrottle<50){tunRaf=requestAnimationFrame(tunLoop);return;}tunerUpdateThrottle=now;const buf=new Float32Array(tunAn.fftSize);tunAn.getFloatTimeDomainData(buf);let rms=0;for(let i=0;i<buf.length;i++)rms+=buf[i]*buf[i];const volume=Math.sqrt(rms/buf.length);updateMicLevel(volume);const fr=autoCorr(buf,AC.sampleRate);updTuner(fr>0?f2n(fr):null);tunRaf=requestAnimationFrame(tunLoop);}
 
-async function togTuner(){const tb=g('tbtnBig'),tbl=g('tbtnBigLabel'),ts=g('tst');if(!tunOn){try{if(AC&&AC.state==='running')await AC.suspend();await new Promise(r=>setTimeout(r,300));gCtx();tunStr=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:false,noiseSuppression:false,autoGainControl:false,sampleRate:48000}});const src=AC.createMediaStreamSource(tunStr);tunAn=AC.createAnalyser();tunAn.fftSize=8192;tunAn.smoothingTimeConstant=0.8;src.connect(tunAn);tunOn=true;if(tb){tb.classList.add('on');tb.childNodes[0].textContent='⏹️';if(tbl)tbl.textContent='Detener micrófono';}if(ts){ts.textContent='🎤 Escuchando...';ts.className='tuner-status listening';}tunLoop();}catch(e){console.error('Tuner error:',e.name,e.message);if(ts){ts.textContent='❌ '+e.name+': '+e.message;ts.className='tuner-status';}}}else{cancelAnimationFrame(tunRaf);if(tunStr)tunStr.getTracks().forEach(t=>t.stop());tunAn=null;tunStr=null;tunOn=false;if(tb){tb.classList.remove('on');tb.childNodes[0].textContent='🎙️';if(tbl)tbl.textContent='Presiona para comenzar';}if(ts){ts.textContent='Micrófono: Apagado';ts.className='tuner-status';}const mb=g('micLevel');if(mb)mb.style.width='0%';updTuner(null);silenceCounter=SILENCE_RESET+1;updTuner(null);if(AC&&AC.state==='suspended')AC.resume();}}
+async function togTuner(){const tb=g('tbtnBig'),tbl=g('tbtnBigLabel'),ts=g('tst');if(!tunOn){try{gCtx();tunStr=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:false,noiseSuppression:false,autoGainControl:false,sampleRate:48000}});const src=AC.createMediaStreamSource(tunStr);tunAn=AC.createAnalyser();tunAn.fftSize=8192;tunAn.smoothingTimeConstant=0.8;src.connect(tunAn);tunOn=true;if(tb){tb.classList.add('on');tb.childNodes[0].textContent='⏹️';if(tbl)tbl.textContent='Detener micrófono';}if(ts){ts.textContent='🎤 Escuchando...';ts.className='tuner-status listening';}tunLoop();}catch(e){if(ts){ts.textContent='❌ Permiso denegado';ts.className='tuner-status';}}}else{cancelAnimationFrame(tunRaf);if(tunStr)tunStr.getTracks().forEach(t=>t.stop());tunAn=null;tunStr=null;tunOn=false;if(tb){tb.classList.remove('on');tb.childNodes[0].textContent='🎙️';if(tbl)tbl.textContent='Presiona para comenzar';}if(ts){ts.textContent='Micrófono: Apagado';ts.className='tuner-status';}const mb=g('micLevel');if(mb)mb.style.width='0%';updTuner(null);silenceCounter=SILENCE_RESET+1;updTuner(null);}}
 
 function initTuningSelector(){const container=g('tuningSelector');if(!container)return;container.innerHTML='';Object.keys(TUNINGS_CONFIG).forEach(key=>{const btn=document.createElement('button');btn.className='tuning-btn'+(key===currentTuningKey?' active':'');btn.textContent=TUNINGS_CONFIG[key].name;btn.onclick=()=>{currentTuningKey=key;document.querySelectorAll('.tuning-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');const label=g('stringsLabel');if(label)label.textContent=TUNINGS_CONFIG[key].name;updateStringsDisplay(lastValidNote);};container.appendChild(btn);});}
 
@@ -584,8 +584,8 @@ const WT_STEPS=[
   {target:'pb',      title:'▶ Play / Pausa',        desc:'Pulsa para arrancar el metrónomo. El péndulo se moverá y escucharás el clic al ritmo que marques.',                         arrow:'up'},
   {target:'bsl',     title:'🎚 Ajusta el BPM',       desc:'Desliza para cambiar la velocidad. También puedes usar los botones − y + para ir de uno en uno.',                          arrow:'up'},
   {target:'btap-tap',title:'👆 Botón TAP',            desc:'¿No sabes el BPM de tu canción? Pulsa TAP varias veces al ritmo y MetroMaestro lo calculará automáticamente.',             arrow:'up'},
-  {target:'pb-ts',   title:'🎼 Compás',              desc:'Elige entre 2/4, 3/4, 4/4 y más. El primer tiempo siempre suena más fuerte para que identifiques el acento.',              arrow:'up'},
-  {target:'pb-sn',   title:'🔊 Sonido de clic',      desc:'Cambia entre distintos timbres: clásico, madera, campana… y ajusta el volumen y el swing a tu gusto.',                    arrow:'up'},
+  {target:'ph-ts',   title:'🎼 Compás',              desc:'Elige entre 2/4, 3/4, 4/4 y más. El primer tiempo siempre suena más fuerte para que identifiques el acento.',              arrow:'up'},
+  {target:'ph-sn',   title:'🔊 Sonido de clic',      desc:'Cambia entre distintos timbres: clásico, madera, campana… y ajusta el volumen y el swing a tu gusto.',                    arrow:'up'},
   {target:'dpb',     title:'🥁 Batería independiente',desc:'Una batería con su propio BPM. Puedes usarla sola o sincronizarla con el metrónomo mediante el botón SYNC.',               arrow:'up'},
   {target:'tab-t',   title:'🎸 Afinador',            desc:'Cambia a la pestaña del afinador para afinar tu instrumento con el micrófono. Soporta guitarra, bajo, ukulele y más.',     arrow:'down'},
   {target:'help-btn-wt', title:'❓ Esta ayuda',       desc:'Puedes volver a ver este tutorial en cualquier momento pulsando el botón ? del encabezado.',                               arrow:'up'},
@@ -607,8 +607,8 @@ function showWTStep(){if(!wtOverlay)return;const s=WT_STEPS[wtStep];
   else{el=g(s.target);}
   if(!el){nextWTStep();return;}
 
-  if(s.target==='pb-ts'&&el.classList.contains('op')){togP('ts');}
-  if(s.target==='pb-sn'&&el.classList.contains('op')){togP('sn');}
+  if(s.target==='ph-ts'){const pb2=g('pb-ts');if(pb2&&pb2.classList.contains('op'))togP('ts');}
+  if(s.target==='ph-sn'){const pb2=g('pb-sn');if(pb2&&pb2.classList.contains('op'))togP('sn');}
 
   el.scrollIntoView({behavior:'smooth',block:'center'});
 
@@ -618,9 +618,7 @@ function showWTStep(){if(!wtOverlay)return;const s=WT_STEPS[wtStep];
     const top=r.top-pad, left=r.left-pad, w=r.width+pad*2, h=r.height+pad*2;
     hl.style.cssText=`top:${top}px;left:${left}px;width:${w}px;height:${h}px;`;
 
-    // Cut transparent hole in backdrop
     const bd=wtOverlay.querySelector('.wt-backdrop');
-    const vw=window.innerWidth,vh=window.innerHeight;
     bd.style.clipPath=`polygon(
       0% 0%, 100% 0%, 100% 100%, 0% 100%,
       0% ${top}px,
